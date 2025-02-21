@@ -77,14 +77,14 @@ const getSingleStudent = async (req: Request, res: Response) => {
 const deleteSingleStudent = async (req: Request, res: Response) => {
   try {
     const { studentId } = req.params;
-    const result = StudentServices.deleteSingleStudentFromDB(studentId);
+    const result = await StudentServices.deleteSingleStudentFromDB(studentId);
 
     res.status(200).json({
       success: true,
       message: 'Students is delete successfully',
       data: result,
     });
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).json({
       success: false,
       message: err.message || 'Something went wrong',

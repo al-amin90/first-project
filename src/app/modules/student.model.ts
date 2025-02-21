@@ -88,71 +88,79 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 });
 
 //. student.modal file
-const studentSchema = new Schema<TStudent, IStudentModel>({
-  id: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  name: {
-    type: userNameSchema,
-    required: [true, 'Name is required'],
-  },
-  password: {
-    type: String,
-    required: [true, 'Password is required'],
-    maxlength: [20, 'more than 20 not allowed'],
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: ['male', 'female', 'other'],
-      message: "{VALUE} is one of the following: 'male' , 'female' or 'other'",
+const studentSchema = new Schema<TStudent, IStudentModel>(
+  {
+    id: {
+      type: String,
+      required: true,
+      unique: true,
     },
-    required: true,
-  },
-  dateOfBirth: { type: String },
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    validate: {
-      validator: (values) => validator.isEmail(values),
-      message: '{VALUE} is not a valid email type',
+    name: {
+      type: userNameSchema,
+      required: [true, 'Name is required'],
+    },
+    password: {
+      type: String,
+      required: [true, 'Password is required'],
+      maxlength: [20, 'more than 20 not allowed'],
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: ['male', 'female', 'other'],
+        message:
+          "{VALUE} is one of the following: 'male' , 'female' or 'other'",
+      },
+      required: true,
+    },
+    dateOfBirth: { type: String },
+    email: {
+      type: String,
+      required: [true, 'Email is required'],
+      validate: {
+        validator: (values) => validator.isEmail(values),
+        message: '{VALUE} is not a valid email type',
+      },
+    },
+    contactNumber: {
+      type: String,
+      required: [true, 'Contact Number is required'],
+    },
+    emergencyContactNo: {
+      type: String,
+      required: [true, 'Emergency Contact No is required'],
+    },
+    bloodGroup: {
+      type: String,
+      enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
+    },
+    presentAddress: { type: String, required: true },
+    permanentAddress: { type: String, required: true },
+    guardian: {
+      type: guardianSchema,
+      required: [true, 'Guardian is required'],
+    },
+    localGuardian: {
+      type: localGuardianSchema,
+      required: [true, 'local Guardian is required'],
+    },
+    profileImg: { type: String },
+    isActive: {
+      type: String,
+      enum: ['active', 'blocked'],
+      default: 'active',
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
-  contactNumber: {
-    type: String,
-    required: [true, 'Contact Number is required'],
+  {
+    toJSON: {
+      virtuals: true,
+    },
   },
-  emergencyContactNo: {
-    type: String,
-    required: [true, 'Emergency Contact No is required'],
-  },
-  bloodGroup: {
-    type: String,
-    enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
-  },
-  presentAddress: { type: String, required: true },
-  permanentAddress: { type: String, required: true },
-  guardian: {
-    type: guardianSchema,
-    required: [true, 'Guardian is required'],
-  },
-  localGuardian: {
-    type: localGuardianSchema,
-    required: [true, 'local Guardian is required'],
-  },
-  profileImg: { type: String },
-  isActive: {
-    type: String,
-    enum: ['active', 'blocked'],
-    default: 'active',
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
-});
+);
 
 // ----- pre save middleware/hook : will work on create() and save()
 studentSchema.pre('save', async function (next) {
@@ -173,7 +181,23 @@ studentSchema.post('save', function (doc, next) {
 
 // ---------- query middleware
 studentSchema.pre('find', function (next) {
-  console.log(this);
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+studentSchema.pre('findOne', function (next) {
+  this.findOne({ isDeleted: { $ne: true } });
+  next();
+});
+
+studentSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  next();
+});
+
+//------------virtual
+studentSchema.virtual('fullName').get(function () {
+  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
 });
 
 // ------------- creating a custom statics modal
