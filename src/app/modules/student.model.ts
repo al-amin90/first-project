@@ -148,18 +148,32 @@ const studentSchema = new Schema<TStudent, IStudentModel>({
     enum: ['active', 'blocked'],
     default: 'active',
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // ----- pre save middleware/hook : will work on create() and save()
-studentSchema.pre('save', function () {
-  const user = this;
-  bcrypt.hash(user.password, Number(config.bcrypt_salt_rounds));
-  console.log(this, 'pre hook : we will save data');
+studentSchema.pre('save', async function (next) {
+  let user = this;
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+
+  next();
 });
 
 //------- post save middleware / hook
-studentSchema.post('save', function () {
-  console.log(this, 'post hook : we saved out data');
+studentSchema.post('save', function (doc, next) {
+  doc.password = '';
+  next();
+});
+
+// ---------- query middleware
+studentSchema.pre('find', function (next) {
+  console.log(this);
 });
 
 // ------------- creating a custom statics modal
