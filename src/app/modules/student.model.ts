@@ -4,10 +4,13 @@ import {
   TGuardian,
   TLocalGuardian,
   TStudent,
-  StudentMethods,
-  TStudentModel,
+  // StudentMethods,
+  // TStudentModel,
   TUserName,
+  IStudentModel,
 } from './student/studentInterface';
+import bcrypt from 'bcrypt';
+import config from '../config';
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -85,7 +88,7 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 });
 
 //. student.modal file
-const studentSchema = new Schema<TStudent, TStudentModel, StudentMethods>({
+const studentSchema = new Schema<TStudent, IStudentModel>({
   id: {
     type: String,
     required: true,
@@ -94,6 +97,11 @@ const studentSchema = new Schema<TStudent, TStudentModel, StudentMethods>({
   name: {
     type: userNameSchema,
     required: [true, 'Name is required'],
+  },
+  password: {
+    type: String,
+    required: [true, 'Password is required'],
+    maxlength: [20, 'more than 20 not allowed'],
   },
   gender: {
     type: String,
@@ -142,12 +150,32 @@ const studentSchema = new Schema<TStudent, TStudentModel, StudentMethods>({
   },
 });
 
-studentSchema.methods.isUserExists = async function (id: string) {
-  const existingUser = await StudentModel.findOne({ id });
+// ----- pre save middleware/hook : will work on create() and save()
+studentSchema.pre('save', function () {
+  const user = this;
+  bcrypt.hash(user.password, Number(config.bcrypt_salt_rounds));
+  console.log(this, 'pre hook : we will save data');
+});
+
+//------- post save middleware / hook
+studentSchema.post('save', function () {
+  console.log(this, 'post hook : we saved out data');
+});
+
+// ------------- creating a custom statics modal
+studentSchema.statics.isUserExists = async function (id: string) {
+  const existingUser = StudentModel.findOne({ id });
+
   return existingUser;
 };
 
-export const StudentModel = model<TStudent, TStudentModel>(
+// ------------- creating a custom instance modal
+// studentSchema.methods.isUserExists = async function (id: string) {
+//   const existingUser = await StudentModel.findOne({ id });
+//   return existingUser;
+// };
+
+export const StudentModel = model<TStudent, IStudentModel>(
   'Student',
   studentSchema,
 );
