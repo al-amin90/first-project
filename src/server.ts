@@ -1,15 +1,15 @@
-import app from './app';
-import config from './app/config';
+import app from './app'
+import config from './app/config'
 
 // getting-started.js
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 async function main() {
-  await mongoose.connect(config.database_url as string);
+  await mongoose.connect(config.database_url as string)
 
   app.listen(config.port, () => {
-    console.log(`Example app listening on port ${config.port}`);
-  });
+    console.log(`Example app listening on port ${config.port}`)
+  })
 }
 
-main().catch((err) => console.log(err));
+main().catch(err => console.log(err))

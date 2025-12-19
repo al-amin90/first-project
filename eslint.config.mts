@@ -9,9 +9,13 @@ export default defineConfig([
     plugins: { js },
     extends: ['js/recommended'],
     languageOptions: { globals: globals.browser },
-    // rules: {
-    //   'no-unused-vars': 'error',
-    // },
+    rules: {
+      'no-unused-vars': 'error',
+      'no-unused-expressions': 'error',
+      'prefer-const': 'error',
+      'no-console': 'warn',
+      'no-undef': 'error'
+    },
     ignores: ['.node_modules/*', 'dist/**'],
   },
   tseslint.configs.recommended,
