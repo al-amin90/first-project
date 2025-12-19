@@ -1,4 +1,4 @@
-export type UserName = {
+export type TUserName = {
   firstName: string
   middleName?: string
   lastName: string
@@ -20,7 +20,7 @@ export type TLocalGuardian = {
 
 export type TStudent = {
   id: string
-  name: UserName
+  name: TUserName
   gender: 'male' | 'female'
   dateOfBirth: string
   email: string

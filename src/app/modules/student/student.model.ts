@@ -44,4 +44,6 @@ const studentSchema = new Schema<TStudent>({
   isActive: ['active', 'blocked'],
 })
 
-const Student = model<TStudent>('Student', studentSchema)
+const StudentModal = model<TStudent>('Student', studentSchema)
+
+export default StudentModal
