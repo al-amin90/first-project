@@ -7,9 +7,9 @@ import {
 } from './student.interface'
 
 const userNameSchema = new Schema<TUserName>({
-  firstName: { type: String, require: true },
+  firstName: { type: String, required: [true, 'First is Required'] },
   middleName: String,
-  lastName: { type: String, require: true },
+  lastName: { type: String, required: [true, 'Last is Required'] },
 })
 
 const guardianSchema = new Schema<TGuardian>({
@@ -27,21 +27,43 @@ const localGuardian = new Schema<TLocalGuardian>({
 })
 
 const studentSchema = new Schema<TStudent>({
-  id: { type: String },
-  name: userNameSchema,
-  gender: ['male', 'female'],
-  dateOfBirth: String,
+  id: { type: String, required: true, unique: true },
+  name: {
+    type: userNameSchema,
+    required: true,
+  },
+  gender: {
+    type: String,
+    enum: {
+      values: ['male', 'female'],
+      message: "{VALUE} is no gender other then ['male', 'female']",
+    },
+  },
+  dateOfBirth: { type: String, required: true },
   email: { type: String, required: true },
   contactNumber: { type: String, required: true },
   avatar: String,
   emergencyContactNo: String,
-  bloodGroup: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
+  bloodGroup: {
+    type: String,
+    enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
+  },
   presentAddress: { type: String, required: true },
   permanentAddress: { type: String, required: true },
-  guardian: guardianSchema,
-  localGuardian: localGuardian,
+  guardian: {
+    type: guardianSchema,
+    required: true,
+  },
+  localGuardian: {
+    type: localGuardian,
+    required: true,
+  },
   profileImg: String,
-  isActive: ['active', 'blocked'],
+  isActive: {
+    type: String,
+    enum: ['active', 'blocked'],
+    required: true,
+  },
 })
 
 const StudentModal = model<TStudent>('Student', studentSchema)
