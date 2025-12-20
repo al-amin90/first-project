@@ -2,9 +2,15 @@ import { Request, Response } from 'express'
 import { studentService } from './student.service'
 import { TStudent } from './student.interface'
 
+import Joi from 'joi'
+
 const createStudent = async (req: Request, res: Response) => {
   try {
     const student: TStudent = req.body
+
+    const JoiValidation = Joi.object({
+      id: Joi.string().max(20).required(),
+    })
 
     const result = await studentService.createStudentIntoDB(student)
     res.status(200).json({

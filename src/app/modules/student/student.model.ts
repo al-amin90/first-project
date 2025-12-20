@@ -5,6 +5,7 @@ import {
   TStudent,
   TUserName,
 } from './student.interface'
+import validator from 'validator'
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -22,7 +23,14 @@ const userNameSchema = new Schema<TUserName>({
     },
   },
   middleName: String,
-  lastName: { type: String, required: [true, 'Last is Required'] },
+  lastName: {
+    type: String,
+    required: [true, 'Last is Required'],
+    validate: {
+      validator: value => validator.isAlpha(value),
+      message: '{VALUE} is not Valid',
+    },
+  },
 })
 
 const guardianSchema = new Schema<TGuardian>({
@@ -53,7 +61,14 @@ const studentSchema = new Schema<TStudent>({
     },
   },
   dateOfBirth: { type: String, required: true },
-  email: { type: String, required: true },
+  email: {
+    type: String,
+    required: true,
+    validate: {
+      validator: value => validator.isEmail(value),
+      message: '{VALUE} is not Valid Email',
+    },
+  },
   contactNumber: { type: String, required: true },
   avatar: String,
   emergencyContactNo: String,
