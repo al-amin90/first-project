@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { studentService } from './student.service'
 import { TStudent } from './student.interface'
-import studentJoiValidationSchema from './student.joi.validate'
+// import studentJoiValidationSchema from './student.joi.validate'
 import { studentZodSchema } from './student.validate'
 
 const createStudent = async (req: Request, res: Response) => {

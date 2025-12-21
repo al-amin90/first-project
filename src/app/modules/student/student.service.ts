@@ -39,7 +39,7 @@ const deleteStudentFromDB = async (id: string) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new Error('Invalid student ID')
   }
-  const result = await StudentModal.deleteOne({ _id: id })
+  const result = await StudentModal.updateOne({ _id: id }, { isDeleted: true })
   return result
 }
 

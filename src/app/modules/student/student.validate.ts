@@ -51,4 +51,5 @@ export const studentZodSchema = z.object({
   localGuardian: localGuardianZodSchema,
   profileImg: z.string().optional(),
   isActive: z.enum(['active', 'blocked']),
+  isDeleted: z.boolean().optional(),
 })

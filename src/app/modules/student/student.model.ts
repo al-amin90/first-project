@@ -98,6 +98,7 @@ const studentSchema = new Schema<TStudent, IStudentModel>(
       enum: ['active', 'blocked'],
       required: true,
     },
+    isDeleted: { type: Boolean, default: false },
   },
   {
     // methods: {
