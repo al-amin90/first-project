@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose'
 import {
+  StudentMethods,
+  StudentModel,
   TGuardian,
   TLocalGuardian,
   TStudent,
@@ -47,7 +49,7 @@ const localGuardian = new Schema<TLocalGuardian>({
   address: { type: String, required: true },
 })
 
-const studentSchema = new Schema<TStudent>({
+const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
   id: { type: String, required: true, unique: true },
   name: {
     type: userNameSchema,
@@ -94,6 +96,11 @@ const studentSchema = new Schema<TStudent>({
   },
 })
 
-const StudentModal = model<TStudent>('Student', studentSchema)
+studentSchema.methods.isUserExist = async function (id: string) {
+  const existingUser = await StudentModal.findOne({ id })
+  return existingUser
+}
+
+const StudentModal = model<TStudent, StudentModel>('Student', studentSchema)
 
 export default StudentModal

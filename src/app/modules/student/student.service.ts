@@ -4,6 +4,11 @@ import StudentModal from './student.model'
 
 const createStudentIntoDB = async (studentData: TStudent) => {
   const student = new StudentModal(studentData)
+
+  if (await student.isUserExist(student.id)) {
+    throw new Error('User Already Exist')
+  }
+
   const result = await student.save() // buit in instant method
   return result
 }
