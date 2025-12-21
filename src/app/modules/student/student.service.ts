@@ -3,18 +3,25 @@ import { TStudent } from './student.interface'
 import StudentModal from './student.model'
 
 const createStudentIntoDB = async (studentData: TStudent) => {
-  const student = new StudentModal(studentData)
+  /// ========> this custom instance methods
+  // const student = new StudentModal(studentData)
 
-  if (await student.isUserExist(student.id)) {
+  // if (await student.isUserExist(student.id)) {
+  //   throw new Error('User Already Exist')
+  // }
+
+  /// ========> this custom static instance methods
+
+  if (await StudentModal.isUserExist2(studentData.id)) {
     throw new Error('User Already Exist')
   }
 
-  const result = await student.save() // buit in instant method
+  const result = await StudentModal.create(studentData)
   return result
 }
 
 // const createStudentIntoDB = async (student: TStudent) => {
-//   const result = await StudentModal.create(student)
+//   const result = await StudentModal.create(studentData) //=========>  buit in instant method
 //   return result
 // }
 

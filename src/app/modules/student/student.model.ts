@@ -1,13 +1,13 @@
 import { Schema, model } from 'mongoose'
 import {
-  StudentMethods,
-  StudentModel,
+  IStudentModel,
+  // StudentMethods,
   TGuardian,
   TLocalGuardian,
   TStudent,
   TUserName,
 } from './student.interface'
-import validator from 'validator'
+// import validator from 'validator'
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -49,58 +49,73 @@ const localGuardian = new Schema<TLocalGuardian>({
   address: { type: String, required: true },
 })
 
-const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
-  id: { type: String, required: true, unique: true },
-  name: {
-    type: userNameSchema,
-    required: true,
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: ['male', 'female'],
-      message: "{VALUE} is no gender other then ['male', 'female']",
+const studentSchema = new Schema<TStudent, IStudentModel>(
+  {
+    id: { type: String, required: true, unique: true },
+    name: {
+      type: userNameSchema,
+      required: true,
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: ['male', 'female'],
+        message: "{VALUE} is no gender other then ['male', 'female']",
+      },
+    },
+    dateOfBirth: { type: String, required: true },
+    email: {
+      type: String,
+      required: true,
+      // validate: {
+      //   validator: value => validator.isEmail(value),
+      //   message: '{VALUE} is not Valid Email',
+      // },
+    },
+    contactNumber: { type: String, required: true },
+    avatar: String,
+    emergencyContactNo: String,
+    bloodGroup: {
+      type: String,
+      enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
+    },
+    presentAddress: { type: String, required: true },
+    permanentAddress: { type: String, required: true },
+    guardian: {
+      type: guardianSchema,
+      required: true,
+    },
+    localGuardian: {
+      type: localGuardian,
+      required: true,
+    },
+    profileImg: String,
+    isActive: {
+      type: String,
+      enum: ['active', 'blocked'],
+      required: true,
     },
   },
-  dateOfBirth: { type: String, required: true },
-  email: {
-    type: String,
-    required: true,
-    // validate: {
-    //   validator: value => validator.isEmail(value),
-    //   message: '{VALUE} is not Valid Email',
+  {
+    // methods: {
+    //   async isUserExist(id: string) {
+    //     const existingUser = await StudentModal.findOne({ id })
+    //     return existingUser
+    //   },
     // },
+    statics: {
+      async isUserExist2(id: string) {
+        return await this.findOne({ id })
+      },
+    },
   },
-  contactNumber: { type: String, required: true },
-  avatar: String,
-  emergencyContactNo: String,
-  bloodGroup: {
-    type: String,
-    enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
-  },
-  presentAddress: { type: String, required: true },
-  permanentAddress: { type: String, required: true },
-  guardian: {
-    type: guardianSchema,
-    required: true,
-  },
-  localGuardian: {
-    type: localGuardian,
-    required: true,
-  },
-  profileImg: String,
-  isActive: {
-    type: String,
-    enum: ['active', 'blocked'],
-    required: true,
-  },
-})
+)
 
-studentSchema.methods.isUserExist = async function (id: string) {
-  const existingUser = await StudentModal.findOne({ id })
-  return existingUser
-}
+// studentSchema.methods.isUserExist = async function (id: string) {
+//   const existingUser = await StudentModal.findOne({ id })
+//   return existingUser
+// }
 
-const StudentModal = model<TStudent, StudentModel>('Student', studentSchema)
+const StudentModal = model<TStudent, IStudentModel>('Student', studentSchema)
 
 export default StudentModal
