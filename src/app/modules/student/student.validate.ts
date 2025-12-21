@@ -30,6 +30,7 @@ const localGuardianZodSchema = z.object({
 // ---------------- Student ----------------
 export const studentZodSchema = z.object({
   id: z.string().min(1, 'ID is required'),
+  password: z.string(),
   name: userNameZodSchema,
   gender: z.enum(['male', 'female'], {
     errorMap: () => ({

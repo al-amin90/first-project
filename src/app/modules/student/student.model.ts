@@ -7,6 +7,8 @@ import {
   TStudent,
   TUserName,
 } from './student.interface'
+import bcrypt from 'bcrypt'
+import config from '../../config'
 // import validator from 'validator'
 
 const userNameSchema = new Schema<TUserName>({
@@ -52,6 +54,7 @@ const localGuardian = new Schema<TLocalGuardian>({
 const studentSchema = new Schema<TStudent, IStudentModel>(
   {
     id: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
     name: {
       type: userNameSchema,
       required: true,
@@ -115,6 +118,20 @@ const studentSchema = new Schema<TStudent, IStudentModel>(
 //   const existingUser = await StudentModal.findOne({ id })
 //   return existingUser
 // }
+
+studentSchema.pre('save', async function (next) {
+  // hashing before save into db
+  this.password = await bcrypt.hash(
+    this.password,
+    Number(config.bcrypt_salt_rounds),
+  )
+  next()
+})
+
+studentSchema.post('save', function (doc, next) {
+  this.password = ''
+  next()
+})
 
 const StudentModal = model<TStudent, IStudentModel>('Student', studentSchema)
 
