@@ -2,10 +2,16 @@ import mongoose from 'mongoose'
 import { TStudent } from './student.interface'
 import StudentModal from './student.model'
 
-const createStudentIntoDB = async (student: TStudent) => {
-  const result = await StudentModal.create(student)
+const createStudentIntoDB = async (studentData: TStudent) => {
+  const student = new StudentModal(studentData)
+  const result = await student.save() // buit in instant method
   return result
 }
+
+// const createStudentIntoDB = async (student: TStudent) => {
+//   const result = await StudentModal.create(student)
+//   return result
+// }
 
 const getAllStudentFromDB = async () => {
   const result = await StudentModal.find()
