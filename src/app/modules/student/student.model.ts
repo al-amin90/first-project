@@ -112,6 +112,7 @@ const studentSchema = new Schema<TStudent, IStudentModel>(
         return await this.findOne({ id })
       },
     },
+    toJSON: { virtuals: true },
   },
 )
 
@@ -146,6 +147,10 @@ studentSchema.pre('findOne', function (next) {
 
 studentSchema.pre('aggregate', function () {
   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } })
+})
+
+studentSchema.virtual('fullName').get(function () {
+  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`
 })
 
 const StudentModal = model<TStudent, IStudentModel>('Student', studentSchema)
