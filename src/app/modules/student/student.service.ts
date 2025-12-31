@@ -1,24 +1,23 @@
 import mongoose from 'mongoose'
-import { TStudent } from './student.interface'
 import StudentModal from './student.model'
 
-const createStudentIntoDB = async (studentData: TStudent) => {
-  /// ========> this custom instance methods
-  // const student = new StudentModal(studentData)
+// const createStudentIntoDB = async (studentData: TStudent) => {
+//   /// ========> this custom instance methods
+//   // const student = new StudentModal(studentData)
 
-  // if (await student.isUserExist(student.id)) {
-  //   throw new Error('User Already Exist')
-  // }
+//   // if (await student.isUserExist(student.id)) {
+//   //   throw new Error('User Already Exist')
+//   // }
 
-  /// ========> this custom static instance methods
+//   /// ========> this custom static instance methods
 
-  if (await StudentModal.isUserExist2(studentData.id)) {
-    throw new Error('User Already Exist')
-  }
+//   if (await StudentModal.isUserExist2(studentData.id)) {
+//     throw new Error('User Already Exist')
+//   }
 
-  const result = await StudentModal.create(studentData)
-  return result
-}
+//   const result = await StudentModal.create(studentData)
+//   return result
+// }
 
 // const createStudentIntoDB = async (student: TStudent) => {
 //   const result = await StudentModal.create(studentData) //=========>  buit in instant method
@@ -45,7 +44,6 @@ const deleteStudentFromDB = async (id: string) => {
 }
 
 export const studentService = {
-  createStudentIntoDB,
   getAllStudentFromDB,
   getSingleStudentFromDB,
   deleteStudentFromDB,

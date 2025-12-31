@@ -1,40 +1,6 @@
 import { Request, Response } from 'express'
 import { studentService } from './student.service'
-import { TStudent } from './student.interface'
 // import studentJoiValidationSchema from './student.joi.validate'
-import { studentZodSchema } from './student.validate'
-
-const createStudent = async (req: Request, res: Response) => {
-  try {
-    const student: TStudent = req.body
-
-    // ========> joi validate
-    // const { value, error } = studentJoiValidationSchema.validate(student)
-    // if (error) {
-    //   res.status(400).json({
-    //     success: false,
-    //     message: 'Student is not create Successfully',
-    //     error,
-    //   })
-    // }
-
-    const zodParserData = studentZodSchema.parse(student)
-
-    const result = await studentService.createStudentIntoDB(zodParserData)
-    res.status(200).json({
-      success: true,
-      message: 'Student is create Successfully',
-      data: result,
-    })
-  } catch (error: any) {
-    console.log(error)
-    res.status(400).json({
-      success: false,
-      message: error.message || 'Student is not create Successfully',
-      error,
-    })
-  }
-}
 
 const getAllStudent = async (req: Request, res: Response) => {
   try {
@@ -95,7 +61,6 @@ const deleteSingleStudent = async (req: Request, res: Response) => {
 }
 
 export const studentControllers = {
-  createStudent,
   getAllStudent,
   getSingleStudent,
   deleteSingleStudent,
