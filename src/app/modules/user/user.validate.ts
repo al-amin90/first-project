@@ -1,10 +1,9 @@
 import z from 'zod'
 
 export const userZodSchema = z.object({
-  id: z.string(),
-  password: z.string(),
-  needsPasswordChange: z.boolean(),
-  role: z.enum(['admin', 'student', 'faculty']),
-  status: z.enum(['blocked', 'in-progress']),
-  isDeleted: z.boolean(),
+  password: z
+    .string({
+      invalid_type_error: 'Password must be string',
+    })
+    .max(20, { message: 'Password cant not be more than 20' }),
 })
