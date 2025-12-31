@@ -16,10 +16,12 @@ const userSchema = new Schema<IUser>(
       default: true,
     },
     role: {
+      type: String,
       enum: ['admin', 'student', 'faculty'],
       required: true,
     },
     status: {
+      type: String,
       enum: ['blocked', 'in-progress'],
       default: 'in-progress',
     },

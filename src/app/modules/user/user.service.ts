@@ -1,13 +1,14 @@
 import config from '../../config'
+import { TStudent } from '../student/student.interface'
 import StudentModal from '../student/student.model'
-import { IUser, newUser } from './user.interface'
+import { IUser } from './user.interface'
 import { UserModel } from './user.model'
 
 const createStudentDateIntoDB = async (
   password: string,
-  studentDate: IUser,
+  studentDate: TStudent,
 ) => {
-  const user: newUser = {}
+  const user: Partial<IUser> = {}
 
   user.password = password || (config.default_password as string)
   user.role = 'student'
@@ -15,7 +16,7 @@ const createStudentDateIntoDB = async (
 
   const result = await UserModel.create(user)
   console.log('result', result)
-  console.log('result', result)
+  console.log('Object.keys(result)', Object.keys(result))
 
   if (Object.keys(result).length) {
     studentDate.id = result.id
