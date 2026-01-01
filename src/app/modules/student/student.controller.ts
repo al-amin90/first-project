@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { studentService } from './student.service'
+import sendResponse from '../../utils/SendResponse'
+import status from 'http-status'
 
 const getAllStudent = async (
   req: Request,
@@ -8,7 +10,9 @@ const getAllStudent = async (
 ) => {
   try {
     const result = await studentService.getAllStudentFromDB()
-    res.status(200).json({
+
+    sendResponse(res, {
+      statusCode: status.OK,
       success: true,
       message: 'Student Retrieve data Successfully',
       data: result,
@@ -27,7 +31,9 @@ const getSingleStudent = async (
 
   try {
     const result = await studentService.getSingleStudentFromDB(id)
-    res.status(200).json({
+
+    sendResponse(res, {
+      statusCode: status.OK,
       success: true,
       message: 'Student Retrieve single data Successfully',
       data: result,
@@ -46,7 +52,9 @@ const deleteSingleStudent = async (
 
   try {
     const result = await studentService.deleteStudentFromDB(id)
-    res.status(200).json({
+
+    sendResponse(res, {
+      statusCode: status.OK,
       success: true,
       message: 'Delete Student single data Successfully',
       data: result,
