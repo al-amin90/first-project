@@ -1,8 +1,11 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { studentService } from './student.service'
-// import studentJoiValidationSchema from './student.joi.validate'
 
-const getAllStudent = async (req: Request, res: Response) => {
+const getAllStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const result = await studentService.getAllStudentFromDB()
     res.status(200).json({
@@ -10,17 +13,16 @@ const getAllStudent = async (req: Request, res: Response) => {
       message: 'Student Retrieve data Successfully',
       data: result,
     })
-  } catch (error) {
-    console.log(error)
-    res.status(400).json({
-      success: false,
-      message: 'Student is not Retrieve data Successfully',
-      data: error,
-    })
+  } catch (err) {
+    next(err)
   }
 }
 
-const getSingleStudent = async (req: Request, res: Response) => {
+const getSingleStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { id } = req.params
 
   try {
@@ -30,17 +32,16 @@ const getSingleStudent = async (req: Request, res: Response) => {
       message: 'Student Retrieve single data Successfully',
       data: result,
     })
-  } catch (error) {
-    console.log(error)
-    res.status(400).json({
-      success: false,
-      message: 'Student data not Retrieve Successfully',
-      data: error,
-    })
+  } catch (err) {
+    next(err)
   }
 }
 
-const deleteSingleStudent = async (req: Request, res: Response) => {
+const deleteSingleStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { id } = req.params
 
   try {
@@ -50,13 +51,8 @@ const deleteSingleStudent = async (req: Request, res: Response) => {
       message: 'Delete Student single data Successfully',
       data: result,
     })
-  } catch (error) {
-    console.log(error)
-    res.status(400).json({
-      success: false,
-      message: 'Failed Retrieve Student data',
-      data: error,
-    })
+  } catch (err) {
+    next(err)
   }
 }
 

@@ -60,7 +60,6 @@ const studentSchema = new Schema<TStudent, IStudentModel>(
       unique: true,
       ref: 'User',
     },
-    password: { type: String, required: true },
     name: {
       type: userNameSchema,
       required: true,
@@ -116,25 +115,6 @@ const studentSchema = new Schema<TStudent, IStudentModel>(
     toJSON: { virtuals: true },
   },
 )
-
-// studentSchema.methods.isUserExist = async function (id: string) {
-//   const existingUser = await StudentModal.findOne({ id })
-//   return existingUser
-// }
-
-studentSchema.pre('save', async function (next) {
-  // hashing before save into db
-  this.password = await bcrypt.hash(
-    this.password,
-    Number(config.bcrypt_salt_rounds),
-  )
-  next()
-})
-
-studentSchema.post('save', function (doc, next) {
-  doc.password = ''
-  next()
-})
 
 studentSchema.pre('find', function (next) {
   this.find({ isDeleted: { $ne: true } })
