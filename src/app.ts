@@ -6,6 +6,7 @@ import cors from 'cors'
 import userRouter from './app/modules/user/user.route'
 import GlobalErrorHandler from './app/middlewares/GlobalErrorHandler'
 import NotFound from './app/middlewares/NotFound'
+import router from './app/routes'
 
 const app: Application = express()
 
@@ -14,8 +15,7 @@ app.use(express.json())
 app.use(cors())
 
 // all application route here
-app.use('/api/v1/students/', studentRouters)
-app.use('/api/v1/users/', userRouter)
+app.use('/api/v1', router)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World')

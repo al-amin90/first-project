@@ -1,10 +1,10 @@
 import express from 'express'
 import { studentControllers } from './student.controller'
 
-const router = express.Router()
+const studentRouter = express.Router()
 
-router.get('/', studentControllers.getAllStudent)
-router.get('/:id', studentControllers.getSingleStudent)
-router.delete('/:id', studentControllers.deleteSingleStudent)
+studentRouter.get('/', studentControllers.getAllStudent)
+studentRouter.get('/:id', studentControllers.getSingleStudent)
+studentRouter.delete('/:id', studentControllers.deleteSingleStudent)
 
-export const studentRouters = router
+export default studentRouter
