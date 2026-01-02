@@ -1,31 +1,24 @@
-import { NextFunction, Request, Response } from 'express'
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import userService from './user.service'
 import sendResponse from '../../utils/SendResponse'
 import status from 'http-status'
+import catchAsync from '../../utils/catchAsync'
 
-const createStudent = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const { password, student: studentDate } = req.body
+const createStudent = catchAsync(async (req, res, next) => {
+  const { password, student: studentDate } = req.body
 
-    const result = await userService.createStudentDateIntoDB(
-      password,
-      studentDate,
-    )
+  const result = await userService.createStudentDateIntoDB(
+    password,
+    studentDate,
+  )
 
-    sendResponse(res, {
-      statusCode: status.OK,
-      success: true,
-      message: 'Student is create Successfully',
-      data: result,
-    })
-  } catch (err) {
-    next(err)
-  }
-}
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Student is create Successfully',
+    data: result,
+  })
+})
 
 export default {
   createStudent,

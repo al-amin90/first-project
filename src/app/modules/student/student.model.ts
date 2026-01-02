@@ -7,8 +7,6 @@ import {
   TStudent,
   TUserName,
 } from './student.interface'
-import bcrypt from 'bcrypt'
-import config from '../../config'
 // import validator from 'validator'
 
 const userNameSchema = new Schema<TUserName>({
@@ -75,10 +73,6 @@ const studentSchema = new Schema<TStudent, IStudentModel>(
     email: {
       type: String,
       required: true,
-      // validate: {
-      //   validator: value => validator.isEmail(value),
-      //   message: '{VALUE} is not Valid Email',
-      // },
     },
     contactNumber: { type: String, required: true },
     avatar: String,

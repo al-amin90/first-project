@@ -12,11 +12,9 @@ const createStudentDateIntoDB = async (
 
   user.password = password || (config.default_password as string)
   user.role = 'student'
-  user.id = '22033'
+  user.id = 'ST002'
 
   const result = await UserModel.create(user)
-  console.log('result', result)
-  console.log('Object.keys(result)', Object.keys(result))
 
   if (Object.keys(result).length) {
     studentDate.id = result.id

@@ -1,68 +1,44 @@
-import { NextFunction, Request, Response } from 'express'
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { studentService } from './student.service'
 import sendResponse from '../../utils/SendResponse'
 import status from 'http-status'
+import catchAsync from '../../utils/catchAsync'
 
-const getAllStudent = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const result = await studentService.getAllStudentFromDB()
+const getAllStudent = catchAsync(async (req, res, next) => {
+  const result = await studentService.getAllStudentFromDB()
 
-    sendResponse(res, {
-      statusCode: status.OK,
-      success: true,
-      message: 'Student Retrieve data Successfully',
-      data: result,
-    })
-  } catch (err) {
-    next(err)
-  }
-}
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Student Retrieve data Successfully',
+    data: result,
+  })
+})
 
-const getSingleStudent = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const getSingleStudent = catchAsync(async (req, res, next) => {
   const { id } = req.params
 
-  try {
-    const result = await studentService.getSingleStudentFromDB(id)
+  const result = await studentService.getSingleStudentFromDB(id)
 
-    sendResponse(res, {
-      statusCode: status.OK,
-      success: true,
-      message: 'Student Retrieve single data Successfully',
-      data: result,
-    })
-  } catch (err) {
-    next(err)
-  }
-}
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Student Retrieve single data Successfully',
+    data: result,
+  })
+})
 
-const deleteSingleStudent = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const deleteSingleStudent = catchAsync(async (req, res, next) => {
   const { id } = req.params
 
-  try {
-    const result = await studentService.deleteStudentFromDB(id)
-
-    sendResponse(res, {
-      statusCode: status.OK,
-      success: true,
-      message: 'Delete Student single data Successfully',
-      data: result,
-    })
-  } catch (err) {
-    next(err)
-  }
-}
+  const result = await studentService.deleteStudentFromDB(id)
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Delete Student single data Successfully',
+    data: result,
+  })
+})
 
 export const studentControllers = {
   getAllStudent,

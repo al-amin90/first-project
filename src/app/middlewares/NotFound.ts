@@ -6,7 +6,7 @@ import status from 'http-status'
 const NotFound = (req: Request, res: Response, next: NextFunction) => {
   res.status(status.NOT_FOUND).json({
     success: false,
-    message: 'Route Not Found!',
+    message: 'Not Found!',
     error: '',
   })
 }
