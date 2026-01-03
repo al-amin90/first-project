@@ -1,7 +1,7 @@
 import * as z from 'zod'
 
 // ---------------- User Name ----------------
-const userNameZodSchema = z.object({
+const userNameValidationSchema = z.object({
   firstName: z
     .string()
     .trim()
@@ -12,7 +12,7 @@ const userNameZodSchema = z.object({
 })
 
 // ---------------- Guardian ----------------
-const guardianZodSchema = z.object({
+const guardianValidationSchema = z.object({
   fatherName: z.string().min(1, 'Father name is required'),
   fatherOccupation: z.string().min(1, 'Father occupation is required'),
   fatherContactNo: z.string().min(1, 'Father contact number is required'),
@@ -20,7 +20,7 @@ const guardianZodSchema = z.object({
 })
 
 // ---------------- Local Guardian ----------------
-const localGuardianZodSchema = z.object({
+const localGuardianValidationSchema = z.object({
   name: z.string().min(1, 'Local guardian name is required'),
   occupation: z.string().min(1, 'Occupation is required'),
   contactNo: z.string().min(1, 'Contact number is required'),
@@ -28,28 +28,27 @@ const localGuardianZodSchema = z.object({
 })
 
 // ---------------- Student ----------------
-export const studentZodSchema = z.object({
-  id: z.string().min(1, 'ID is required'),
+export const createStudentValidationSchema = z.object({
   password: z.string(),
-  name: userNameZodSchema,
-  gender: z.enum(['male', 'female'], {
-    errorMap: () => ({
-      message: "Gender must be either 'male' or 'female'",
+  student: z.object({
+    name: userNameValidationSchema,
+    gender: z.enum(['male', 'female'], {
+      errorMap: () => ({
+        message: "Gender must be either 'male' or 'female'",
+      }),
     }),
+    dateOfBirth: z.string().min(1, 'Date of birth is required'),
+    email: z.string().email('Invalid email address'),
+    contactNumber: z.string().min(1, 'Contact number is required'),
+    avatar: z.string().optional(),
+    emergencyContactNo: z.string().optional(),
+    bloodGroup: z
+      .enum(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'])
+      .optional(),
+    presentAddress: z.string().min(1, 'Present address is required'),
+    permanentAddress: z.string().min(1, 'Permanent address is required'),
+    guardian: guardianValidationSchema,
+    localGuardian: localGuardianValidationSchema,
+    profileImg: z.string().optional(),
   }),
-  dateOfBirth: z.string().min(1, 'Date of birth is required'),
-  email: z.string().email('Invalid email address'),
-  contactNumber: z.string().min(1, 'Contact number is required'),
-  avatar: z.string().optional(),
-  emergencyContactNo: z.string().optional(),
-  bloodGroup: z
-    .enum(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'])
-    .optional(),
-  presentAddress: z.string().min(1, 'Present address is required'),
-  permanentAddress: z.string().min(1, 'Permanent address is required'),
-  guardian: guardianZodSchema,
-  localGuardian: localGuardianZodSchema,
-  profileImg: z.string().optional(),
-  isActive: z.enum(['active', 'blocked']),
-  isDeleted: z.boolean().optional(),
 })
