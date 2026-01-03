@@ -3,6 +3,11 @@ import userController from './user.controller'
 
 const userRouter = Router()
 
-userRouter.post('/create-student', userController.createStudent)
+const middleware = (req, res, next) => {
+  console.log('i am middleware')
+  next()
+}
+
+userRouter.post('/create-student', middleware, userController.createStudent)
 
 export default userRouter
