@@ -1,4 +1,4 @@
-type Month = [
+export type TMonths =
   | 'January'
   | 'February'
   | 'March'
@@ -10,13 +10,12 @@ type Month = [
   | 'September'
   | 'October'
   | 'November'
-  | 'December',
-]
+  | 'December'
 
 export type TAcademicSemester = {
   name: 'Autumn' | 'Summer' | 'Fall'
   year: Date
   code: '01' | '02' | '03'
-  startMonth: Month
-  endMonth: Month
+  startMonth: TMonths
+  endMonth: TMonths
 }

@@ -1,34 +1,41 @@
 import { Schema, model } from 'mongoose'
-import { TAcademicSemester } from './academicSemester.interface'
+import { TAcademicSemester, TMonths } from './academicSemester.interface'
 
-const studentSchema = new Schema<TAcademicSemester>({
-  name: { type: String, required: true, unique: true },
-  gender: {
-    type: String,
-    enum: {
-      values: ['male', 'female'],
-      message: "{VALUE} is no gender other then ['male', 'female']",
+const AcademicSemesterName = ['Autumn', 'Summer', 'Fall'] as const
+const AcademicSemesterCode = ['01', '02', '03'] as const
+const Months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+] as const
+
+const studentSchema = new Schema<TAcademicSemester>(
+  {
+    name: { type: String, required: true, enum: AcademicSemesterName },
+    year: { type: Date, required: true },
+    code: {
+      type: String,
+      enum: AcademicSemesterCode,
     },
+    startMonth: {
+      type: String,
+      required: true,
+      enum: Months,
+    },
+    endMonth: { type: String, required: true, enum: Months },
   },
-  dateOfBirth: { type: String, required: true },
-  email: {
-    type: String,
-    required: true,
-  },
-  contactNumber: { type: String, required: true },
-  avatar: String,
-  emergencyContactNo: String,
-  bloodGroup: {
-    type: String,
-    enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
-  },
-  presentAddress: { type: String, required: true },
-  permanentAddress: { type: String, required: true },
+  { timestamps: true },
+)
 
-  profileImg: String,
-  isDeleted: { type: Boolean, default: false },
-})
-
-const StudentModal = model<TStudent, IStudentModel>('Student', studentSchema)
+const StudentModal = model<TAcademicSemester>('Student', studentSchema)
 
 export default StudentModal
