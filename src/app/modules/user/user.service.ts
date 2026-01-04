@@ -1,8 +1,10 @@
 import config from '../../config'
+import AcademicSemesterModel from '../academicSemester/academicSemester.model'
 import { TStudent } from '../student/student.interface'
 import StudentModal from '../student/student.model'
 import { IUser } from './user.interface'
 import { UserModel } from './user.model'
+import { generateStudentId } from './user.utils'
 
 const createStudentDateIntoDB = async (
   password: string,
@@ -12,7 +14,12 @@ const createStudentDateIntoDB = async (
 
   user.password = password || (config.default_password as string)
   user.role = 'student'
-  user.id = 'ST002'
+
+  const admissionSemester = await AcademicSemesterModel.findById(
+    studentDate.admissionSemester,
+  )
+
+  user.id = generateStudentId(admissionSemester)
 
   const result = await UserModel.create(user)
 

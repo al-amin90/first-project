@@ -12,3 +12,11 @@ export const academicSemesterZodSchema = z.object({
   startMonth: z.enum([...Months]),
   endMonth: z.enum([...Months]),
 })
+
+export const updateAcademicSemesterZodSchema = z.object({
+  name: z.enum([...AcademicSemesterName]).optional(),
+  year: z.string().optional(),
+  code: z.enum([...AcademicSemesterCode]).optional(),
+  startMonth: z.enum([...Months]).optional(),
+  endMonth: z.enum([...Months]).optional(),
+})
