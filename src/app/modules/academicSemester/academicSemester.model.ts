@@ -6,10 +6,10 @@ import {
   Months,
 } from './AcademicSemester.constant'
 
-const studentSchema = new Schema<TAcademicSemester>(
+const academicSemester = new Schema<TAcademicSemester>(
   {
     name: { type: String, required: true, enum: AcademicSemesterName },
-    year: { type: Date, required: true },
+    year: { type: String, required: true },
     code: {
       type: String,
       enum: AcademicSemesterCode,
@@ -24,6 +24,9 @@ const studentSchema = new Schema<TAcademicSemester>(
   { timestamps: true },
 )
 
-const StudentModal = model<TAcademicSemester>('Student', studentSchema)
+const AcademicSemesterModel = model<TAcademicSemester>(
+  'AcademicSemester',
+  academicSemester,
+)
 
-export default StudentModal
+export default AcademicSemesterModel

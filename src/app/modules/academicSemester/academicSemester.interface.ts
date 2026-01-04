@@ -14,7 +14,7 @@ export type TMonths =
 
 export type TAcademicSemester = {
   name: 'Autumn' | 'Summer' | 'Fall'
-  year: Date
+  year: string
   code: '01' | '02' | '03'
   startMonth: TMonths
   endMonth: TMonths
