@@ -18,8 +18,11 @@ const createStudentDateIntoDB = async (
   const admissionSemester = await AcademicSemesterModel.findById(
     studentDate.admissionSemester,
   )
+  if (!admissionSemester) {
+    throw new Error('Admission semester not found')
+  }
 
-  user.id = generateStudentId(admissionSemester)
+  user.id = await generateStudentId(admissionSemester)
 
   const result = await UserModel.create(user)
 
