@@ -1,35 +1,26 @@
 import { TAcademicSemester } from '../academicSemester/academicSemester.interface'
 import { UserModel } from './user.model'
 
-const findLastStudentId = async () => {
+const findLastStudentId = async (semesterYearCode: string) => {
   const lastStudent = await UserModel.findOne(
     {
       role: 'student',
+      id: { $regex: new RegExp(`^${semesterYearCode}`) },
     },
     { id: 1, _id: 0 },
   )
     .sort({ createdAt: -1 })
     .lean()
 
-  return lastStudent?.id ? lastStudent.id : undefined
+  console.log('lastStudent', lastStudent)
+  return lastStudent?.id ? lastStudent.id.substring(6) : undefined
 }
 
 export const generateStudentId = async (payload: TAcademicSemester) => {
-  let currentId = (0).toString()
+  const { code, year } = payload
 
-  const lastStudentId = await findLastStudentId()
-  const lastStudentCode = lastStudentId?.substring(4, 6)
-  const lastStudentYear = lastStudentId?.substring(0, 4)
-  const currentSemesterCode = payload?.code
-  const currentSemesterYear = payload?.year
-
-  if (
-    lastStudentId &&
-    currentSemesterCode === lastStudentCode &&
-    lastStudentYear === currentSemesterYear
-  ) {
-    currentId = lastStudentId.substring(6)
-  }
+  const currentId =
+    (await findLastStudentId(`${year}${code}`)) || (0).toString()
 
   const incrementId = (Number(currentId) + 1).toString().padStart(4, '0')
 
