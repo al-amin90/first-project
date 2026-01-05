@@ -12,7 +12,6 @@ const findLastStudentId = async (semesterYearCode: string) => {
     .sort({ createdAt: -1 })
     .lean()
 
-  console.log('lastStudent', lastStudent)
   return lastStudent?.id ? lastStudent.id.substring(6) : undefined
 }
 
