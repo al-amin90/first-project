@@ -1,5 +1,7 @@
 import { model, Schema } from 'mongoose'
 import { TAcademicFaculty } from './academicFaculty.interface'
+import AppError from '../../errors/AppError'
+import status from 'http-status'
 
 const academicFacultySchema = new Schema<TAcademicFaculty>(
   {
@@ -18,7 +20,7 @@ academicFacultySchema.pre('save', async function (next) {
   const isExist = await AcademicFaculty.findOne({ name: this.name })
 
   if (isExist) {
-    throw new Error('This Faculty is already exist')
+    throw new AppError(status.CONFLICT, 'This Faculty is already exist')
   }
   next()
 })

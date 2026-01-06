@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
 import StudentModal from './student.model'
+import AppError from '../../errors/AppError'
+import status from 'http-status'
 
 // const createStudentIntoDB = async (studentData: TStudent) => {
 //   /// ========> this custom instance methods
@@ -44,7 +46,7 @@ const getSingleStudentFromDB = async (id: string) => {
 
 const deleteStudentFromDB = async (id: string) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    throw new Error('Invalid student ID')
+    throw new AppError(status.BAD_REQUEST, 'Invalid student ID')
   }
   const result = await StudentModal.updateOne({ _id: id }, { isDeleted: true })
   return result
