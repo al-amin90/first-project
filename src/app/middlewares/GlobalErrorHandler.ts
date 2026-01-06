@@ -15,6 +15,7 @@ const GlobalErrorHandler = (
     success: false,
     message,
     error: err,
+    stack: err.stack,
   })
 }
 

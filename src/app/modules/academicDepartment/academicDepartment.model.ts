@@ -19,6 +19,21 @@ const academicDepartmentSchema = new Schema<TAcademicDepartment>(
   },
 )
 
+class AppError extends Error {
+  public statusCode: number
+
+  constructor(statusCode: number, message: string, stack = '') {
+    super(message)
+    this.statusCode = statusCode
+
+    if (stack) {
+      this.stack = stack
+    } else {
+      Error.captureStackTrace(this, this.constructor)
+    }
+  }
+}
+
 academicDepartmentSchema.pre('save', async function (next) {
   const isExist = await AcademicDepartment.findOne({ name: this.name })
 
@@ -35,7 +50,7 @@ academicDepartmentSchema.pre('findOneAndUpdate', async function (next) {
   const isExist = await AcademicDepartment.findOne(query)
 
   if (!isExist) {
-    throw new Error('This Department is not found')
+    throw new AppError(404, 'This Department is not found')
   }
 
   next()

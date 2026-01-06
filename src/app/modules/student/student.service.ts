@@ -30,8 +30,15 @@ const getAllStudentFromDB = async () => {
 }
 
 const getSingleStudentFromDB = async (id: string) => {
-  const result = await StudentModal.aggregate([{ $match: { id: id } }])
-  // const result = await StudentModal.findOne({ id: id })
+  // const result = await StudentModal.aggregate([{ $match: { id: id } }])
+  const result = await StudentModal.findOne({ id: id })
+    .populate('admissionSemester')
+    .populate({
+      path: 'academicDepartment',
+      populate: {
+        path: 'academicFaculty',
+      },
+    })
   return result
 }
 
