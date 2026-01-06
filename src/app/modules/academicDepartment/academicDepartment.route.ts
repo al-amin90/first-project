@@ -15,7 +15,7 @@ router.post(
 
 router.get('/', academicDepartmentControllers.getAllAcademicDepartment)
 router.get('/:id', academicDepartmentControllers.getSingleAcademicDepartment)
-router.put(
+router.patch(
   '/:id',
   validateRequest(
     academicDepartmentValidation.updateAcademicDepartmentValidationSchema,
