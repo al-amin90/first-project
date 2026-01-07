@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 import StudentModal from './student.model'
 import AppError from '../../errors/AppError'
 import status from 'http-status'
+import { UserModel } from '../user/user.model'
 
 // const createStudentIntoDB = async (studentData: TStudent) => {
 //   /// ========> this custom instance methods
@@ -45,11 +46,42 @@ const getSingleStudentFromDB = async (id: string) => {
 }
 
 const deleteStudentFromDB = async (id: string) => {
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    throw new AppError(status.BAD_REQUEST, 'Invalid student ID')
+  const session = await mongoose.startSession()
+
+  try {
+    session.startTransaction()
+
+    if (!(await StudentModal.isUserExist2(id))) {
+      throw new AppError(status.NOT_FOUND, 'Student is not found')
+    }
+    const result = await StudentModal.findOneAndUpdate(
+      { id: id },
+      { isDeleted: true },
+      { new: true, session },
+    )
+
+    if (!result) {
+      throw new AppError(status.BAD_GATEWAY, 'Failed to delete Student')
+    }
+
+    const result2 = await UserModel.findOneAndUpdate(
+      { id: id },
+      { isDeleted: true },
+      { new: true, session },
+    )
+    if (!result2) {
+      throw new AppError(status.BAD_GATEWAY, 'Failed to delete User')
+    }
+
+    await session.commitTransaction()
+    await session.endSession()
+    return result
+  } catch (err) {
+    console.log('err', err)
+    await session.abortTransaction()
+    await session.endSession()
+    throw err
   }
-  const result = await StudentModal.updateOne({ _id: id }, { isDeleted: true })
-  return result
 }
 
 export const studentService = {

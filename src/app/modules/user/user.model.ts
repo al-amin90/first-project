@@ -1,9 +1,9 @@
 import { model, Schema } from 'mongoose'
-import { IUser } from './user.interface'
+import { IUser, IUserModel } from './user.interface'
 import bcrypt from 'bcrypt'
 import config from '../../config'
 
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema<IUser, IUserModel>(
   {
     id: {
       type: String,
@@ -33,7 +33,14 @@ const userSchema = new Schema<IUser>(
       default: false,
     },
   },
-  { timestamps: true },
+  {
+    statics: {
+      async isUserExist(id: string) {
+        return this.findOne({ id })
+      },
+    },
+    timestamps: true,
+  },
 )
 
 userSchema.pre('save', async function (next) {
@@ -49,4 +56,4 @@ userSchema.post('save', async function (doc, next) {
   next()
 })
 
-export const UserModel = model<IUser>('User', userSchema)
+export const UserModel = model<IUser, IUserModel>('User', userSchema)

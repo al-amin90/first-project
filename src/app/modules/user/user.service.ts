@@ -53,6 +53,7 @@ const createStudentDateIntoDB = async (
     console.log('err', err)
     await session.abortTransaction()
     await session.endSession()
+    throw err
   }
 }
 
