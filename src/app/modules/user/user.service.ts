@@ -7,6 +7,7 @@ import StudentModal from '../student/student.model'
 import { IUser } from './user.interface'
 import { UserModel } from './user.model'
 import { generateStudentId } from './user.utils'
+import mongoose from 'mongoose'
 
 const createStudentDateIntoDB = async (
   password: string,
@@ -24,17 +25,35 @@ const createStudentDateIntoDB = async (
     throw new AppError(status.NOT_FOUND, 'Admission semester not found')
   }
 
-  user.id = await generateStudentId(admissionSemester)
+  const session = await mongoose.startSession()
 
-  const result = await UserModel.create(user)
+  try {
+    session.startTransaction()
 
-  if (Object.keys(result).length) {
-    studentDate.id = result.id
-    studentDate.user = result._id
+    user.id = await generateStudentId(admissionSemester)
+    const result = await UserModel.create([user], { session })
+
+    if (!result.length) {
+      throw new AppError(status.BAD_REQUEST, 'Faild to create to User')
+    }
+
+    studentDate.id = result[0].id
+    studentDate.user = result[0]._id
+
+    const result2 = await StudentModal.create([studentDate], { session })
+    if (!result2.length) {
+      throw new AppError(status.BAD_REQUEST, 'Faild to create to User')
+    }
+
+    await session.commitTransaction()
+    await session.endSession()
+
+    return result2
+  } catch (err) {
+    console.log('err', err)
+    await session.abortTransaction()
+    await session.endSession()
   }
-
-  const result2 = await StudentModal.create(studentDate)
-  return result2
 }
 
 export default {
