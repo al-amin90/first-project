@@ -47,7 +47,29 @@ const getSingleStudentFromDB = async (id: string) => {
 }
 
 const updateStudentInDB = async (id: string, payload: Partial<TStudent>) => {
-  const result = await StudentModal.findOneAndUpdate({ id: id }, payload, {
+  const { name, guardian, localGuardian, ...remainingData } = payload
+
+  const modifiedData: Record<string, unknown> = { ...remainingData }
+
+  if (name && Object.keys(name).length) {
+    for (const [key, value] of Object.entries(name)) {
+      modifiedData[`name.${key}`] = value
+    }
+  }
+
+  if (guardian && Object.keys(guardian).length) {
+    for (const [key, value] of Object.entries(guardian)) {
+      modifiedData[`guardian.${key}`] = value
+    }
+  }
+
+  if (localGuardian && Object.keys(localGuardian).length) {
+    for (const [key, value] of Object.entries(localGuardian)) {
+      modifiedData[`localGuardian.${key}`] = value
+    }
+  }
+
+  const result = await StudentModal.findOneAndUpdate({ id: id }, modifiedData, {
     new: true,
   })
   return result
