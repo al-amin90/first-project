@@ -1,22 +1,37 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { NextFunction, Request, Response } from 'express'
+import { ErrorRequestHandler } from 'express'
+import { ZodError } from 'zod'
 
-const GlobalErrorHandler = (
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const statusCode = err.statusCode || 500
-  const message = err.message || 'Something Went Wrong!'
+const GlobalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  let statusCode = err.statusCode || 500
+  let message = err.message || 'Something Went Wrong!'
+
+  type TErrorSources = {
+    path: string | number
+    message: string
+  }[]
+
+  const errorSources: TErrorSources = [
+    {
+      path: '',
+      message: 'my error is ',
+    },
+  ]
+
+  if (err instanceof ZodError) {
+    statusCode = 400
+    message = 'this is zod error'
+  }
 
   res.status(statusCode).json({
     success: false,
     message,
-    error: err,
+    errorSources,
+    // error: err,
     stack: err.stack,
   })
 }
+
+//adding error handeling zod cast mongooes, developen error
 
 export default GlobalErrorHandler

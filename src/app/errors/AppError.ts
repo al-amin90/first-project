@@ -14,5 +14,3 @@ class AppError extends Error {
 }
 
 export default AppError
-
-//adding error handeling zod cast mongooes, developen error
