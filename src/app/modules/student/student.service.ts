@@ -3,6 +3,7 @@ import StudentModal from './student.model'
 import AppError from '../../errors/AppError'
 import status from 'http-status'
 import { UserModel } from '../user/user.model'
+import { TStudent } from './student.interface'
 
 // const createStudentIntoDB = async (studentData: TStudent) => {
 //   /// ========> this custom instance methods
@@ -42,6 +43,13 @@ const getSingleStudentFromDB = async (id: string) => {
         path: 'academicFaculty',
       },
     })
+  return result
+}
+
+const updateStudentInDB = async (id: string, payload: Partial<TStudent>) => {
+  const result = await StudentModal.findOneAndUpdate({ id: id }, payload, {
+    new: true,
+  })
   return result
 }
 
@@ -88,4 +96,5 @@ export const studentService = {
   getAllStudentFromDB,
   getSingleStudentFromDB,
   deleteStudentFromDB,
+  updateStudentInDB,
 }

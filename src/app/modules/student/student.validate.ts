@@ -53,3 +53,26 @@ export const createStudentValidationSchema = z.object({
     profileImg: z.string().optional(),
   }),
 })
+
+export const updateStudentValidationSchema = z.object({
+  student: z
+    .object({
+      name: userNameValidationSchema.partial().optional(),
+      gender: z.enum(['male', 'female']).optional(),
+      dateOfBirth: z.string().optional(),
+      email: z.string().email().optional(),
+      contactNumber: z.string().optional(),
+      avatar: z.string().optional(),
+      emergencyContactNo: z.string().optional(),
+      bloodGroup: z
+        .enum(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'])
+        .optional(),
+      presentAddress: z.string().optional(),
+      permanentAddress: z.string().optional(),
+      guardian: guardianValidationSchema.partial().optional(),
+      localGuardian: localGuardianValidationSchema.partial().optional(),
+      admissionSemester: z.string().optional(),
+      profileImg: z.string().optional(),
+    })
+    .optional(),
+})
