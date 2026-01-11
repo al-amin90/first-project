@@ -9,7 +9,7 @@ const handleZodHandler = (err: ZodError) => {
     }
   })
 
-  const statusCode = 300
+  const statusCode = 500
 
   return {
     statusCode,

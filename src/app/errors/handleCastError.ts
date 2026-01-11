@@ -11,7 +11,7 @@ const handleCastError = (
     },
   ]
 
-  const statusCode = 500
+  const statusCode = 404
 
   return {
     statusCode,
