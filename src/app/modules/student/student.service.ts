@@ -28,9 +28,20 @@ import { TStudent } from './student.interface'
 //   return result
 // }
 
-const getAllStudentFromDB = async () => {
-  const result = await StudentModal.find()
-  return result
+const getAllStudentFromDB = async (query: Record<string, unknown>) => {
+  const searchTerm = query.searchTerm as string
+
+  const fields = ['email', 'name.lastName', 'presentAddress']
+
+  const filter = searchTerm
+    ? {
+        $or: fields?.map(field => ({
+          [field]: { $regex: searchTerm, $options: 'i' },
+        })),
+      }
+    : {}
+
+  return await StudentModal.find(filter)
 }
 
 const getSingleStudentFromDB = async (id: string) => {
