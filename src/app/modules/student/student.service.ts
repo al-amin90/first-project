@@ -33,9 +33,6 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
   const queryObj = { ...query }
 
   const fields = ['email', 'name.lastName', 'presentAddress']
-  const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'selects']
-
-  excludeFields.forEach(el => delete queryObj[el])
 
   // =============> this is chaining until await it wont resolved the Promise
   const searchQuery = StudentModal.find({
@@ -44,6 +41,8 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
     })),
   })
 
+  const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'selects']
+  excludeFields.forEach(el => delete queryObj[el])
   const filterQuery = searchQuery
     .find(queryObj)
     .populate('admissionSemester')
