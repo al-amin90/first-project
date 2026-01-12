@@ -29,19 +29,42 @@ import { TStudent } from './student.interface'
 // }
 
 const getAllStudentFromDB = async (query: Record<string, unknown>) => {
-  const searchTerm = query.searchTerm as string
+  const searchTerm = query.searchTerm || ''
+  const queryObj = { ...query }
 
   const fields = ['email', 'name.lastName', 'presentAddress']
+  const excludeFields = ['searchTerm', 'sort', 'limit']
 
-  const filter = searchTerm
-    ? {
-        $or: fields?.map(field => ({
-          [field]: { $regex: searchTerm, $options: 'i' },
-        })),
-      }
-    : {}
+  excludeFields.forEach(el => delete queryObj[el])
 
-  return await StudentModal.find(filter)
+  // =============> this is chaining until await it wont resolved the Promise
+  const searchQuery = StudentModal.find({
+    $or: fields?.map(field => ({
+      [field]: { $regex: searchTerm, $options: 'i' },
+    })),
+  })
+
+  const filterQuery = searchQuery
+    .find(queryObj)
+    .populate('admissionSemester')
+    .populate({
+      path: 'academicDepartment',
+      populate: {
+        path: 'academicFaculty',
+      },
+    })
+
+  let sort = '-id'
+  if (query.sort) {
+    sort = query.sort as string
+  }
+  const sortQuery = filterQuery.sort(sort)
+
+  let limit = 1
+  if (query.limit) limit = Number(query.limit)
+  const limitQuery = await sortQuery.limit(limit)
+
+  return limitQuery
 }
 
 const getSingleStudentFromDB = async (id: string) => {
