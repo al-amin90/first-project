@@ -8,6 +8,8 @@ import { IUser } from './user.interface'
 import { UserModel } from './user.model'
 import { generateStudentId } from './user.utils'
 import mongoose from 'mongoose'
+import { TFaculty } from '../faculty/faculty.interface'
+import FacultyModal from '../faculty/faculty.model'
 
 const createStudentDateIntoDB = async (
   password: string,
@@ -48,15 +50,57 @@ const createStudentDateIntoDB = async (
     await session.commitTransaction()
     await session.endSession()
 
-    return result2
+    return result2[0]
   } catch (err) {
     console.log('err', err)
     await session.abortTransaction()
-    await session.endSession()
     throw err
+  } finally {
+    await session.endSession()
+  }
+}
+
+const createFacultyDateIntoDB = async (
+  password: string,
+  facultyDate: TFaculty,
+) => {
+  const user: Partial<IUser> = {}
+
+  user.password = password || (config.default_password as string)
+  user.role = 'faculty'
+  user.id = 'T-002'
+
+  const session = await mongoose.startSession()
+
+  try {
+    session.startTransaction()
+
+    const userData = await UserModel.create([user], { session })
+
+    if (!userData.length) {
+      throw new AppError(status.BAD_REQUEST, 'Failed to create to User')
+    }
+
+    facultyDate.id = userData[0].id
+    facultyDate.user = userData[0]._id
+
+    const newFaculty = await FacultyModal.create([facultyDate], { session })
+    if (!newFaculty.length) {
+      throw new AppError(status.BAD_REQUEST, 'Failed to create to Faculty')
+    }
+
+    await session.commitTransaction()
+    return newFaculty[0]
+  } catch (err) {
+    console.log('err', err)
+    await session.abortTransaction()
+    throw err
+  } finally {
+    await session.endSession()
   }
 }
 
 export default {
   createStudentDateIntoDB,
+  createFacultyDateIntoDB,
 }
