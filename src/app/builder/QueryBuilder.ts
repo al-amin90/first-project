@@ -32,14 +32,6 @@ class QueryBuilder<T> {
     excludeFields.forEach(el => delete queryObj[el])
 
     this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>)
-    //   .populate('admissionSemester')
-    //   .populate({
-    //     path: 'academicDepartment',
-    //     populate: {
-    //       path: 'academicFaculty',
-    //     },
-    //   })
-
     return this
   }
 
