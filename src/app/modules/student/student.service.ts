@@ -4,6 +4,8 @@ import AppError from '../../errors/AppError'
 import status from 'http-status'
 import { UserModel } from '../user/user.model'
 import { TStudent } from './student.interface'
+import QueryBuilder from '../../builder/QueryBuilder'
+import { searchableFields } from './student.constant'
 
 // const createStudentIntoDB = async (studentData: TStudent) => {
 //   /// ========> this custom instance methods
@@ -29,54 +31,60 @@ import { TStudent } from './student.interface'
 // }
 
 const getAllStudentFromDB = async (query: Record<string, unknown>) => {
-  const searchTerm = query.searchTerm || ''
-  const queryObj = { ...query }
-
-  const fields = ['email', 'name.lastName', 'presentAddress']
+  // const searchTerm = query.searchTerm || ''
+  // const queryObj = { ...query }
 
   // =============> this is chaining until await it wont resolved the Promise
-  const searchQuery = StudentModal.find({
-    $or: fields?.map(field => ({
-      [field]: { $regex: searchTerm, $options: 'i' },
-    })),
-  })
+  // const searchQuery = StudentModal.find({
+  //   $or: searchableFields?.map(field => ({
+  //     [field]: { $regex: searchTerm, $options: 'i' },
+  //   })),
+  // })
 
-  const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'selects']
-  excludeFields.forEach(el => delete queryObj[el])
-  const filterQuery = searchQuery
-    .find(queryObj)
-    .populate('admissionSemester')
-    .populate({
-      path: 'academicDepartment',
-      populate: {
-        path: 'academicFaculty',
-      },
-    })
+  // const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'selects']
+  // excludeFields.forEach(el => delete queryObj[el])
+  // const filterQuery = searchQuery
+  //   .find(queryObj)
+  //   .populate('admissionSemester')
+  //   .populate({
+  //     path: 'academicDepartment',
+  //     populate: {
+  //       path: 'academicFaculty',
+  //     },
+  //   })
 
-  let sort = '-id'
-  if (query.sort) sort = query.sort as string
+  // let sort = '-id'
+  // if (query.sort) sort = query.sort as string
 
-  const sortQuery = filterQuery.sort(sort)
+  // const sortQuery = filterQuery.sort(sort)
 
-  let limit = 1
-  let skip = 0
-  let page = 1
+  // let limit = 1
+  // let skip = 0
+  // let page = 1
 
-  if (query.limit) limit = Number(query.limit)
-  if (query.page) {
-    page = Number(query.page)
-    skip = (page - 1) * limit
-  }
+  // if (query.limit) limit = Number(query.limit)
+  // if (query.page) {
+  //   page = Number(query.page)
+  //   skip = (page - 1) * limit
+  // }
 
-  const paginationQuery = sortQuery.skip(skip)
-  const limitQuery = paginationQuery.limit(limit)
+  // const paginationQuery = sortQuery.skip(skip)
+  // const limitQuery = paginationQuery.limit(limit)
 
-  let selects = '-__v'
-  if (query.selects) selects = (query.selects as string)?.split(',').join(' ')
+  // let selects = '-__v'
+  // if (query.selects) selects = (query.selects as string)?.split(',').join(' ')
 
-  const selectsQuery = await limitQuery.select(selects)
+  // const selectsQuery = await limitQuery.select(selects)
 
-  return selectsQuery
+  const studentQuery = new QueryBuilder(StudentModal.find(), query)
+    .search(searchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields()
+
+  const result = await studentQuery.modelQuery
+  return result
 }
 
 const getSingleStudentFromDB = async (id: string) => {
