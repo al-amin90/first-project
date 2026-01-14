@@ -25,3 +25,32 @@ export const generateStudentId = async (payload: TAcademicSemester) => {
 
   return `${payload.year}${payload.code}${incrementId}`
 }
+
+export const generateFacultyId = async () => {
+  const lastFaculty = await UserModel.findOne({
+    role: 'faculty',
+    id: { $regex: new RegExp(`^F-`) },
+  })
+    .sort({ createdAt: -1 })
+    .select('id')
+    .lean()
+
+  const lastIdNumber = lastFaculty ? Number(lastFaculty.id.split('-')[1]) : 0
+  const nextId = (lastIdNumber + 1).toString().padStart(4, '0')
+
+  return `F-${nextId}`
+}
+
+export const generateAdminId = async () => {
+  const lastFaculty = await UserModel.findOne({
+    role: 'admin',
+  })
+    .sort({ createdAt: -1 })
+    .select('id')
+    .lean()
+
+  const lastIdNumber = lastFaculty ? Number(lastFaculty.id.split('-')[1]) : 0
+  const nextId = (lastIdNumber + 1).toString().padStart(4, '0')
+
+  return `A-${nextId}`
+}

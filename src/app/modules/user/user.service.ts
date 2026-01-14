@@ -6,10 +6,16 @@ import { TStudent } from '../student/student.interface'
 import StudentModal from '../student/student.model'
 import { IUser } from './user.interface'
 import { UserModel } from './user.model'
-import { generateStudentId } from './user.utils'
+import {
+  generateAdminId,
+  generateFacultyId,
+  generateStudentId,
+} from './user.utils'
 import mongoose from 'mongoose'
 import { TFaculty } from '../faculty/faculty.interface'
 import FacultyModal from '../faculty/faculty.model'
+import { TAdmin } from '../admin/admin.interface'
+import AdminModal from '../admin/admin.model'
 
 const createStudentDateIntoDB = async (
   password: string,
@@ -68,12 +74,13 @@ const createFacultyDateIntoDB = async (
 
   user.password = password || (config.default_password as string)
   user.role = 'faculty'
-  user.id = 'T-002'
 
   const session = await mongoose.startSession()
 
   try {
     session.startTransaction()
+
+    user.id = await generateFacultyId()
 
     const userData = await UserModel.create([user], { session })
 
@@ -100,7 +107,46 @@ const createFacultyDateIntoDB = async (
   }
 }
 
+const createAdminDateIntoDB = async (password: string, adminDate: TAdmin) => {
+  const user: Partial<IUser> = {}
+
+  user.password = password || (config.default_password as string)
+  user.role = 'admin'
+
+  const session = await mongoose.startSession()
+
+  try {
+    session.startTransaction()
+
+    user.id = await generateAdminId()
+
+    const userData = await UserModel.create([user], { session })
+
+    if (!userData.length) {
+      throw new AppError(status.BAD_REQUEST, 'Failed to create to User')
+    }
+
+    adminDate.id = userData[0].id
+    adminDate.user = userData[0]._id
+
+    const newAdmin = await AdminModal.create([adminDate], { session })
+    if (!newAdmin.length) {
+      throw new AppError(status.BAD_REQUEST, 'Failed to create to admin')
+    }
+
+    await session.commitTransaction()
+    return newAdmin[0]
+  } catch (err) {
+    console.log('err', err)
+    await session.abortTransaction()
+    throw err
+  } finally {
+    await session.endSession()
+  }
+}
+
 export default {
   createStudentDateIntoDB,
   createFacultyDateIntoDB,
+  createAdminDateIntoDB,
 }

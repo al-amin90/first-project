@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import { IFacultyModel, TFaculty, TUserName } from './faculty.interface'
+import { IAdminModel, TAdmin, TUserName } from './admin.interface'
 
 // import validator from 'validator'
 
@@ -29,7 +29,7 @@ const userNameSchema = new Schema<TUserName>({
   },
 })
 
-const facultySchema = new Schema<TFaculty, IFacultyModel>(
+const adminSchema = new Schema<TAdmin, IAdminModel>(
   {
     id: { type: String, required: true, unique: true },
     user: {
@@ -66,16 +66,12 @@ const facultySchema = new Schema<TFaculty, IFacultyModel>(
     },
     presentAddress: { type: String, required: true },
     permanentAddress: { type: String, required: true },
-    academicDepartment: {
-      type: Schema.Types.ObjectId,
-      ref: 'AcademicDepartment',
-    },
     profileImg: String,
     isDeleted: { type: Boolean, default: false },
   },
   {
     statics: {
-      async isUserExist2(id) {
+      async isUserExist2(id: string) {
         return await this.findOne({ id })
       },
     },
@@ -84,24 +80,24 @@ const facultySchema = new Schema<TFaculty, IFacultyModel>(
   },
 )
 
-facultySchema.pre('find', function (next) {
+adminSchema.pre('find', function (next) {
   this.find({ isDeleted: { $ne: true } })
   next()
 })
 
-facultySchema.pre('findOne', function (next) {
+adminSchema.pre('findOne', function (next) {
   this.find({ isDeleted: { $ne: true } })
   next()
 })
 
-facultySchema.pre('aggregate', function () {
+adminSchema.pre('aggregate', function () {
   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } })
 })
 
-facultySchema.virtual('fullName').get(function () {
+adminSchema.virtual('fullName').get(function () {
   return `${this?.name?.firstName || ''} ${this?.name?.middleName || ''} ${this?.name?.lastName || ''}`
 })
 
-const FacultyModal = model<TFaculty, IFacultyModel>('Faculty', facultySchema)
+const AdminModal = model<TAdmin, IAdminModel>('Admin', adminSchema)
 
-export default FacultyModal
+export default AdminModal

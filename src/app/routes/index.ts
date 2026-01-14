@@ -4,10 +4,20 @@ import userRouter from '../modules/user/user.route'
 import { academicSemesterRouter } from '../modules/academicSemester/academicSemester.route'
 import { academicFacultyRouter } from '../modules/academicFaculty/academicFaculty.route'
 import { academicDepartmentRouter } from '../modules/academicDepartment/academicDepartment.route'
+import facultyRouter from '../modules/faculty/faculty.route'
+import adminRouter from '../modules/admin/admin.route'
 
 const router = Router()
 
 const moduleRouters = [
+  {
+    path: '/admins',
+    route: adminRouter,
+  },
+  {
+    path: '/faculties',
+    route: facultyRouter,
+  },
   {
     path: '/students',
     route: studentRouter,

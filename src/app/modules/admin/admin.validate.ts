@@ -1,5 +1,5 @@
 import * as z from 'zod'
-import { BloodGroup, Gender } from './faculty.constant'
+import { BloodGroup, Gender } from './admin.constant'
 
 // ---------------- User Name ----------------
 const userNameValidationSchema = z.object({
@@ -12,10 +12,10 @@ const userNameValidationSchema = z.object({
   lastName: z.string().min(1, 'Last name is required'),
 })
 
-// ---------------- Faculty ----------------
-export const createFacultyValidationSchema = z.object({
+// ---------------- Admin ----------------
+export const createAdminValidationSchema = z.object({
   password: z.string(),
-  faculty: z.object({
+  admin: z.object({
     designation: z.string(),
     name: userNameValidationSchema,
     gender: z.enum([...Gender] as [string, ...string[]], {
@@ -30,13 +30,12 @@ export const createFacultyValidationSchema = z.object({
     bloodGroup: z.enum([...BloodGroup] as [string, ...string[]]).optional(),
     presentAddress: z.string().min(1, 'Present address is required'),
     permanentAddress: z.string().min(1, 'Permanent address is required'),
-    academicDepartment: z.string(),
     profileImg: z.string().optional(),
   }),
 })
 
-export const updateFacultyValidationSchema = z.object({
-  student: z
+export const updateAdminValidationSchema = z.object({
+  admin: z
     .object({
       name: userNameValidationSchema.partial().optional(),
       gender: z.enum(['male', 'female']).optional(),
@@ -50,7 +49,6 @@ export const updateFacultyValidationSchema = z.object({
         .optional(),
       presentAddress: z.string().optional(),
       permanentAddress: z.string().optional(),
-      academicDepartment: z.string().optional(),
       profileImg: z.string().optional(),
     })
     .optional(),
