@@ -1,16 +1,18 @@
 import express from 'express'
 import { CourseControllers } from './course.controller'
+import validateRequest from '../../middlewares/validateRequest'
+import { CourseValidations } from './course.validation'
 
 const router = express.Router()
 
-router.post('/create', CourseControllers.createCourse)
+router.post('/create', validateRequest(CourseValidations.createCourseValidationSchema) CourseControllers.createCourse)
 router.get('/', CourseControllers.getAllCourse)
 router.get('/:id', CourseControllers.getSingleCourse)
-// router.patch(
-//   '/:id',
-//   validateRequest(updateFacultyValidationSchema),
-//   facultyControllers.updateSingleFaculty,
-// )
+router.patch(
+  '/:id',
+  validateRequest(CourseValidations.updateCourseValidationSchema),
+  CourseControllers.updateSingleCourse,
+)
 router.delete('/:id', CourseControllers.deleteSingleCourse)
 
 const courseRouter = router

@@ -41,10 +41,6 @@ const courseSchema = new Schema<TCourse>({
     type: Boolean,
     default: false,
   },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
 })
 
 export const Course = model<TCourse>('Course', courseSchema)

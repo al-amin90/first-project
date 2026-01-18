@@ -23,6 +23,11 @@ const getAllCourseFromDB = async (query: Record<string, unknown>) => {
   return result
 }
 
+const updateCourseIntoDB = async (
+  id: string,
+  query: Record<string, unknown>,
+) => {}
+
 const getSingleCourseFromDB = async (id: string) => {
   const result = await Course.findById(id)
   return result
@@ -42,4 +47,5 @@ export const CourseServices = {
   getAllCourseFromDB,
   getSingleCourseFromDB,
   deleteCourseIntoDB,
+  updateCourseIntoDB,
 }
