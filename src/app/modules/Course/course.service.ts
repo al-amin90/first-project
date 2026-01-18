@@ -1,3 +1,4 @@
+import mongoose from 'mongoose'
 import QueryBuilder from '../../builder/QueryBuilder'
 import { searchableFields } from './course.constant'
 import { TCourse } from './course.interface'
@@ -50,12 +51,25 @@ const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
       { new: true, runValidators: true },
     )
 
-    console.log(deletedPreRequisite)
+    const addPreRequisite = preRequisiteCourses.filter(
+      el =>
+        el.course &&
+        mongoose.Types.ObjectId.isValid(el.course) &&
+        !el.isDeleted,
+    )
 
-    return deletedPreRequisiteCourses
+    const addPreRequisiteCourse = await Course.findByIdAndUpdate(
+      id,
+      { $addToSet: { preRequisiteCourses: { $each: addPreRequisite } } },
+      { new: true, runValidators: true },
+    )
   }
 
-  return updateBasicCourseInfo
+  const result = await Course.findById(id).populate(
+    'preRequisiteCourses.course',
+  )
+
+  return result
 }
 
 const getSingleCourseFromDB = async (id: string) => {
