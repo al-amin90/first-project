@@ -14,9 +14,14 @@ const createCourseValidationSchema = z.object({
   isDeleted: z.boolean().optional(),
 })
 
+const assignFacultiesValidationSchema = z.object({
+  faculties: z.array(z.string()),
+})
+
 const updateCourseValidationSchema = createCourseValidationSchema.partial()
 
 export const CourseValidations = {
   createCourseValidationSchema,
   updateCourseValidationSchema,
+  assignFacultiesValidationSchema,
 }

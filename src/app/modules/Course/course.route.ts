@@ -18,7 +18,11 @@ router.patch(
   CourseControllers.updateSingleCourse,
 )
 
-router.put('/:id/assign-faculties', CourseControllers.updateSingleCourse)
+router.put(
+  '/:id/assign-faculties',
+  validateRequest(CourseValidations.assignFacultiesValidationSchema),
+  CourseControllers.assignFaculties,
+)
 
 router.delete('/:id', CourseControllers.deleteSingleCourse)
 

@@ -56,7 +56,10 @@ const assignFaculties = catchAsync(async (req, res) => {
   const { id } = req.params
   const payload = req.body
 
-  const result = await CourseServices.assignFacultiesIntoDB(id, payload)
+  const result = await CourseServices.assignFacultiesIntoDB(
+    id,
+    payload?.faculties,
+  )
 
   sendResponse(res, {
     statusCode: status.OK,

@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import QueryBuilder from '../../builder/QueryBuilder'
 import { searchableFields } from './course.constant'
 import { TCourse, TCourseFaculty } from './course.interface'
-import { Course } from './course.model'
+import { Course, CourseFaculty } from './course.model'
 import AppError from '../../errors/AppError'
 import status from 'http-status'
 
@@ -147,11 +147,9 @@ const assignFacultiesIntoDB = async (
   id: string,
   payload: Partial<TCourseFaculty>,
 ) => {
-  const { faculties } = payload
-
-  const result = await Course.findByIdAndUpdate(
+  const result = await CourseFaculty.findByIdAndUpdate(
     id,
-    { $addToSet: { faculties: { $each: faculties } } },
+    { course: id, $addToSet: { faculties: { $each: payload } } },
     {
       new: true,
       upsert: true,
