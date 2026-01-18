@@ -64,7 +64,24 @@ const assignFaculties = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
-    message: 'Course Update Successfully',
+    message: 'Assign to course Successfully',
+    data: result,
+  })
+})
+
+const removeFaculties = catchAsync(async (req, res) => {
+  const { id } = req.params
+  const payload = req.body
+
+  const result = await CourseServices.removeFacultiesFromDB(
+    id,
+    payload?.faculties,
+  )
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Remove Faculty From course Successfully',
     data: result,
   })
 })
@@ -88,4 +105,5 @@ export const CourseControllers = {
   createCourse,
   updateSingleCourse,
   assignFaculties,
+  removeFaculties,
 }

@@ -23,6 +23,11 @@ router.put(
   validateRequest(CourseValidations.assignFacultiesValidationSchema),
   CourseControllers.assignFaculties,
 )
+router.delete(
+  '/:id/remove-faculties',
+  validateRequest(CourseValidations.assignFacultiesValidationSchema),
+  CourseControllers.removeFaculties,
+)
 
 router.delete('/:id', CourseControllers.deleteSingleCourse)
 
