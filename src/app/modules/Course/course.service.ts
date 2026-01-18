@@ -3,6 +3,8 @@ import QueryBuilder from '../../builder/QueryBuilder'
 import { searchableFields } from './course.constant'
 import { TCourse } from './course.interface'
 import { Course } from './course.model'
+import AppError from '../../errors/AppError'
+import status from 'http-status'
 
 const createCourseIntoDB = async (payload: TCourse) => {
   const result = await Course.create(payload)
@@ -26,50 +28,105 @@ const getAllCourseFromDB = async (query: Record<string, unknown>) => {
 
 const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
   const { preRequisiteCourses, ...remainingData } = payload
+  const session = await mongoose.startSession()
 
-  const updateBasicCourseInfo = await Course.findByIdAndUpdate(
-    id,
-    remainingData,
-    {
-      new: true,
-      runValidators: true,
-    },
-  )
+  try {
+    session.startTransaction()
 
-  if (preRequisiteCourses && preRequisiteCourses.length > 0) {
-    const deletedPreRequisite = preRequisiteCourses
-      .filter(el => el.course && el.isDeleted)
-      .map(el => el.course)
-
-    const deletedPreRequisiteCourses = await Course.findByIdAndUpdate(
+    const updateBasicCourseInfo = await Course.findByIdAndUpdate(
       id,
+      remainingData,
       {
-        $pull: {
-          preRequisiteCourses: { course: { $in: deletedPreRequisite } },
-        },
+        new: true,
+        runValidators: true,
+        session,
       },
-      { new: true, runValidators: true },
     )
 
-    const addPreRequisite = preRequisiteCourses.filter(
-      el =>
-        el.course &&
-        mongoose.Types.ObjectId.isValid(el.course) &&
-        !el.isDeleted,
-    )
+    if (!updateBasicCourseInfo) {
+      throw new AppError(status.BAD_REQUEST, 'Failed to update course')
+    }
 
-    const addPreRequisiteCourse = await Course.findByIdAndUpdate(
-      id,
-      { $addToSet: { preRequisiteCourses: { $each: addPreRequisite } } },
-      { new: true, runValidators: true },
-    )
+    if (preRequisiteCourses && preRequisiteCourses.length > 0) {
+      const deletedPreRequisite = preRequisiteCourses
+        .filter(el => el.course && el.isDeleted)
+        .map(el => el.course)
+
+      if (deletedPreRequisite.length > 0) {
+        await Course.findByIdAndUpdate(
+          id,
+          {
+            $pull: {
+              preRequisiteCourses: {
+                course: { $in: deletedPreRequisite },
+              },
+            },
+          },
+          {
+            new: true,
+            runValidators: true,
+            session,
+          },
+        )
+      }
+
+      const addPreRequisite = preRequisiteCourses
+        .filter(
+          el =>
+            el.course &&
+            mongoose.Types.ObjectId.isValid(el.course) &&
+            !el.isDeleted,
+        )
+        .map(el => el.course)
+
+      if (addPreRequisite.length > 0) {
+        const currentCourse = await Course.findById(id).session(session)
+
+        if (!currentCourse) {
+          throw new AppError(status.BAD_REQUEST, 'Course not found')
+        }
+
+        const existingPreReqIds = currentCourse.preRequisiteCourses.map(pr =>
+          pr.course.toString(),
+        )
+
+        const newPreRequisites = addPreRequisite
+          .filter(courseId => !existingPreReqIds.includes(courseId.toString()))
+          .map(courseId => ({
+            course: courseId,
+            isDeleted: false,
+          }))
+
+        if (newPreRequisites.length > 0) {
+          await Course.findByIdAndUpdate(
+            id,
+            {
+              $push: {
+                preRequisiteCourses: { $each: newPreRequisites },
+              },
+            },
+            {
+              new: true,
+              runValidators: true,
+              session,
+            },
+          )
+        }
+      }
+    }
+
+    const result = await Course.findById(id)
+      .populate('preRequisiteCourses.course')
+      .session(session)
+
+    await session.commitTransaction()
+    return result
+  } catch (err: any) {
+    await session.abortTransaction()
+    throw new Error(err)
+  } finally {
+    await session.endSession()
   }
-
-  const result = await Course.findById(id).populate(
-    'preRequisiteCourses.course',
-  )
-
-  return result
 }
 
 const getSingleCourseFromDB = async (id: string) => {
