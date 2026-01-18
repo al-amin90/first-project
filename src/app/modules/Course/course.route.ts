@@ -5,7 +5,11 @@ import { CourseValidations } from './course.validation'
 
 const router = express.Router()
 
-router.post('/create', validateRequest(CourseValidations.createCourseValidationSchema) CourseControllers.createCourse)
+router.post(
+  '/create',
+  validateRequest(CourseValidations.createCourseValidationSchema),
+  CourseControllers.createCourse,
+)
 router.get('/', CourseControllers.getAllCourse)
 router.get('/:id', CourseControllers.getSingleCourse)
 router.patch(

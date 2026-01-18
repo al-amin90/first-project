@@ -23,10 +23,16 @@ const getAllCourseFromDB = async (query: Record<string, unknown>) => {
   return result
 }
 
-const updateCourseIntoDB = async (
-  id: string,
-  query: Record<string, unknown>,
-) => {}
+const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
+  const { preRequisiteCourses, ...remainingData } = payload
+
+  const result = await Course.findByIdAndUpdate(id, remainingData, {
+    new: true,
+    runValidators: true,
+  })
+
+  return result
+}
 
 const getSingleCourseFromDB = async (id: string) => {
   const result = await Course.findById(id)
