@@ -43,6 +43,10 @@ const moduleRouters = [
     path: '/courses',
     route: courseRouter,
   },
+  {
+    path: '/courses',
+    route: semesterRegistrationRouter,
+  },
 ]
 
 moduleRouters.forEach(route => {
