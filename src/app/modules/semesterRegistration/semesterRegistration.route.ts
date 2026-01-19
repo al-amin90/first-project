@@ -6,7 +6,7 @@ import { semesterRegistrationControllers } from './semesterRegistration.controll
 const router = Router()
 
 router.post(
-  '/create-semester-registration',
+  '/create',
   validateRequest(semesterRegistrationValidation.semesterRegistrationZodSchema),
   semesterRegistrationControllers.createSemesterRegistration,
 )
