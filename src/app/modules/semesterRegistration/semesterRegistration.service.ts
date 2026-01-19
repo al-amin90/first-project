@@ -4,6 +4,7 @@ import { TSemesterRegistration } from './semesterRegistration.interface'
 import SemesterRegistrationModel from './semesterRegistration.model'
 import AcademicSemesterModel from '../academicSemester/academicSemester.model'
 import QueryBuilder from '../../builder/QueryBuilder'
+import { RegistrationStatus } from './semesterRegistration.constant'
 
 const createSemesterRegistrationIntoDB = async (
   payload: TSemesterRegistration,
@@ -11,7 +12,10 @@ const createSemesterRegistrationIntoDB = async (
   const academicSemester = payload.academicSemester
 
   const isThereAnyUpcomingOrOngoing = await SemesterRegistrationModel.findOne({
-    $or: [{ status: 'UPCOMING' }, { status: 'ONGOING' }],
+    $or: [
+      { status: RegistrationStatus.UPCOMING },
+      { status: RegistrationStatus.ONGOING },
+    ],
   })
 
   if (isThereAnyUpcomingOrOngoing) {
@@ -70,15 +74,40 @@ const updateSemesterRegistrationInDB = async (
   if (!isSemesterRegistrationExists) {
     throw new AppError(status.NOT_FOUND, 'Semester Registration is Not Found')
   }
+  const currentStatus = isSemesterRegistrationExists.status
+  const requestedStatus = payload.status
 
-  if (isSemesterRegistrationExists.status === 'ENDED') {
-    throw new AppError(status.BAD_REQUEST, 'Invalid Semester Code')
+  if (currentStatus === RegistrationStatus.ENDED) {
+    throw new AppError(
+      status.BAD_REQUEST,
+      `The Semester is already ${currentStatus}`,
+    )
   }
+  if (
+    currentStatus === RegistrationStatus.UPCOMING &&
+    requestedStatus === RegistrationStatus.ENDED
+  ) {
+    throw new AppError(
+      status.BAD_REQUEST,
+      `You can't directly change status from ${currentStatus} to ${requestedStatus}`,
+    )
+  }
+  if (
+    currentStatus === RegistrationStatus.ONGOING &&
+    requestedStatus === RegistrationStatus.UPCOMING
+  ) {
+    throw new AppError(
+      status.BAD_REQUEST,
+      `You can't directly change status from ${currentStatus} to ${requestedStatus}`,
+    )
+  }
+
   const result = await SemesterRegistrationModel.findByIdAndUpdate(
-    { _id: id },
+    id,
     payload,
-    { new: true },
+    { new: true, runValidators: true },
   )
+
   return result
 }
 
