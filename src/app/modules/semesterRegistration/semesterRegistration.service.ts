@@ -10,6 +10,17 @@ const createSemesterRegistrationIntoDB = async (
 ) => {
   const academicSemester = payload.academicSemester
 
+  const isThereAnyUpcomingOrOngoing = await SemesterRegistrationModel.findOne({
+    $or: [{ status: 'UPCOMING' }, { status: 'ONGOING' }],
+  })
+
+  if (isThereAnyUpcomingOrOngoing) {
+    throw new AppError(
+      status.BAD_REQUEST,
+      `There is already a ${isThereAnyUpcomingOrOngoing?.status} Semester Exists`,
+    )
+  }
+
   const isAcademicSemesterExists =
     await AcademicSemesterModel.findById(academicSemester)
 
@@ -52,21 +63,23 @@ const getSingleSemesterRegistrationFromDB = async (id: string) => {
 
 const updateSemesterRegistrationInDB = async (
   id: string,
-  payload: TSemesterRegistration,
+  payload: Partial<TSemesterRegistration>,
 ) => {
-  // if (
-  //   payload.name &&
-  //   payload.year &&
-  //   SemesterRegistrationNameCodeMapped[payload.name] !== payload.code
-  // ) {
-  //   throw new AppError(status.BAD_REQUEST, 'Invalid Semester Code')
-  // }
-  // const result = await SemesterRegistrationModel.findByIdAndUpdate(
-  //   { _id: id },
-  //   payload,
-  //   { new: true },
-  // )
-  // return result
+  const isSemesterRegistrationExists =
+    await SemesterRegistrationModel.findById(id)
+  if (!isSemesterRegistrationExists) {
+    throw new AppError(status.NOT_FOUND, 'Semester Registration is Not Found')
+  }
+
+  if (isSemesterRegistrationExists.status === 'ENDED') {
+    throw new AppError(status.BAD_REQUEST, 'Invalid Semester Code')
+  }
+  const result = await SemesterRegistrationModel.findByIdAndUpdate(
+    { _id: id },
+    payload,
+    { new: true },
+  )
+  return result
 }
 
 export const semesterRegistrationServices = {
