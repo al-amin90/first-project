@@ -1,11 +1,10 @@
-export type TSemesterRegistration = {
-  name: 'Autumn' | 'Summer' | 'Fall'
-  year: string
-  code: '01' | '02' | '03'
-  startMonth: TMonths
-  endMonth: TMonths
-}
+import { Types } from 'mongoose'
 
-export type TAcademicSemesterNameCodeMapped = {
-  [key: string]: string
+export type TSemesterRegistration = {
+  academicSemester: Types.ObjectId
+  status: 'UPCOMING' | 'ONGOING' | 'ENDED'
+  startDate: Date
+  endDate: Date
+  minCredit: number
+  maxCredit: number
 }

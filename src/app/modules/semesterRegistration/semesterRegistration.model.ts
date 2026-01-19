@@ -1,47 +1,37 @@
 import { Schema, model } from 'mongoose'
-import { TAcademicSemester } from './semesterRegistration.interface'
-import {
-  AcademicSemesterCode,
-  AcademicSemesterName,
-  Months,
-} from './semesterRegistration.constant'
-import AppError from '../../errors/AppError'
-import status from 'http-status'
+import { TSemesterRegistration } from './semesterRegistration.interface'
+import { SemesterRegistrationStatus } from './semesterRegistration.constant'
 
-const academicSemesterSchema = new Schema<TAcademicSemester>(
+const semesterRegistrationSchema = new Schema<TSemesterRegistration>(
   {
-    name: { type: String, required: true, enum: AcademicSemesterName },
-    year: { type: String, required: true },
-    code: {
-      type: String,
-      enum: AcademicSemesterCode,
-    },
-    startMonth: {
-      type: String,
+    academicSemester: {
+      type: Schema.Types.ObjectId,
       required: true,
-      enum: Months,
+      unique: true,
+      ref: 'AcademicSemester',
     },
-    endMonth: { type: String, required: true, enum: Months },
+    status: {
+      type: String,
+      enum: SemesterRegistrationStatus,
+      default: 'UPCOMING',
+    },
+    startDate: {
+      type: Date,
+      required: true,
+    },
+    endDate: {
+      type: Date,
+      required: true,
+    },
+    minCredit: { type: Number, required: true, default: 3 },
+    maxCredit: { type: Number, required: true, default: 15 },
   },
   { timestamps: true },
 )
 
-academicSemesterSchema.pre('save', async function (next) {
-  const isSemesterExists = await AcademicSemesterModel.findOne({
-    name: this.name,
-    year: this.year,
-  })
-
-  if (isSemesterExists) {
-    throw new AppError(status.CONFLICT, 'Semester is already exists')
-  }
-
-  next()
-})
-
-const AcademicSemesterModel = model<TAcademicSemester>(
-  'AcademicSemester',
-  academicSemesterSchema,
+const SemesterRegistrationModel = model<TSemesterRegistration>(
+  'SemesterRegistration',
+  semesterRegistrationSchema,
 )
 
-export default AcademicSemesterModel
+export default SemesterRegistrationModel
