@@ -1,0 +1,28 @@
+import z from 'zod'
+import { Days } from './OfferedCourse.constant'
+
+const createOfferedCourseValidationSchema = z.object({
+  semesterRegistration: z.string(),
+  academicFaculty: z.string(),
+  academicDepartment: z.string(),
+  course: z.string(),
+  faculty: z.string(),
+  section: z.number(),
+  maxCapacity: z.number(),
+  days: z.array(z.enum([...Days] as [string, ...string[]])),
+  startTime: z.string(),
+  endTime: z.string(),
+})
+
+const updateOfferedCourseValidationSchema = z.object({
+  faculty: z.string(),
+  maxCapacity: z.number(),
+  days: z.array(z.enum([...Days] as [string, ...string[]])),
+  startTime: z.string(),
+  endTime: z.string(),
+})
+
+export const offeredCourseValidations = {
+  createOfferedCourseValidationSchema,
+  updateOfferedCourseValidationSchema,
+}
