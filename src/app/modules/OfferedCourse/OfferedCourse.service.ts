@@ -5,9 +5,55 @@ import OfferedCourseModel from './OfferedCourse.model'
 import AcademicSemesterModel from '../academicSemester/academicSemester.model'
 import QueryBuilder from '../../builder/QueryBuilder'
 import { RegistrationStatus } from './OfferedCourse.constant'
+import SemesterRegistrationModel from '../semesterRegistration/semesterRegistration.model'
+import { AcademicFaculty } from '../academicFaculty/academicFaculty.model'
+import { AcademicDepartment } from '../academicDepartment/academicDepartment.model'
+import { Course } from '../Course/course.model'
+import FacultyModal from '../faculty/faculty.model'
 
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
-  const result = await OfferedCourseModel.create(payload)
+  const {
+    semesterRegistration,
+    academicFaculty,
+    academicDepartment,
+    course,
+    faculty,
+  } = payload
+
+  const isSemesterRegistrationExists =
+    await SemesterRegistrationModel.findById(semesterRegistration)
+  if (!isSemesterRegistrationExists) {
+    throw new AppError(status.NOT_FOUND, 'Semester Registration is not Found')
+  }
+
+  const academicSemester = isSemesterRegistrationExists.academicSemester
+
+  const isAcademicFacultyExists =
+    await AcademicFaculty.findById(academicFaculty)
+  if (!isAcademicFacultyExists) {
+    throw new AppError(status.NOT_FOUND, 'Academic Faculty is not Found')
+  }
+
+  const isAcademicDepartmentExists =
+    await AcademicDepartment.findById(academicDepartment)
+  if (!isAcademicDepartmentExists) {
+    throw new AppError(status.NOT_FOUND, 'Academic Faculty is not Found')
+  }
+
+  const isCourseExists = await Course.findById(course)
+  if (!isCourseExists) {
+    throw new AppError(status.NOT_FOUND, 'Course is not Found')
+  }
+
+  const isFacultyExists = await FacultyModal.findById(faculty)
+  if (!isFacultyExists) {
+    throw new AppError(status.NOT_FOUND, 'Faculty is not Found')
+  }
+
+  const result = await OfferedCourseModel.create({
+    ...payload,
+    academicSemester,
+  })
   return result
 }
 
