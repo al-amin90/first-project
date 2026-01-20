@@ -2,9 +2,6 @@ import status from 'http-status'
 import AppError from '../../errors/AppError'
 import { TOfferedCourse } from './OfferedCourse.interface'
 import OfferedCourseModel from './OfferedCourse.model'
-import AcademicSemesterModel from '../academicSemester/academicSemester.model'
-import QueryBuilder from '../../builder/QueryBuilder'
-import { RegistrationStatus } from './OfferedCourse.constant'
 import SemesterRegistrationModel from '../semesterRegistration/semesterRegistration.model'
 import { AcademicFaculty } from '../academicFaculty/academicFaculty.model'
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model'
@@ -17,6 +14,7 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     academicFaculty,
     academicDepartment,
     course,
+    section,
     faculty,
   } = payload
 
@@ -30,6 +28,7 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
 
   const isAcademicFacultyExists =
     await AcademicFaculty.findById(academicFaculty)
+
   if (!isAcademicFacultyExists) {
     throw new AppError(status.NOT_FOUND, 'Academic Faculty is not Found')
   }
@@ -37,7 +36,7 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   const isAcademicDepartmentExists =
     await AcademicDepartment.findById(academicDepartment)
   if (!isAcademicDepartmentExists) {
-    throw new AppError(status.NOT_FOUND, 'Academic Faculty is not Found')
+    throw new AppError(status.NOT_FOUND, 'Academic Department is not Found')
   }
 
   const isCourseExists = await Course.findById(course)
@@ -48,6 +47,31 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   const isFacultyExists = await FacultyModal.findById(faculty)
   if (!isFacultyExists) {
     throw new AppError(status.NOT_FOUND, 'Faculty is not Found')
+  }
+
+  const isDepartmentBelongFaculty = await AcademicDepartment.findOne({
+    _id: academicDepartment,
+    academicFaculty,
+  })
+
+  if (!isDepartmentBelongFaculty) {
+    throw new AppError(
+      status.BAD_REQUEST,
+      `This ${isAcademicDepartmentExists?.name} Department is not belong to this ${isAcademicFacultyExists?.name} Faculty`,
+    )
+  }
+
+  const isSameOfferedExistsWithSameRegister = await OfferedCourseModel.findOne({
+    semesterRegistration,
+    course,
+    section,
+  })
+
+  if (isSameOfferedExistsWithSameRegister) {
+    throw new AppError(
+      status.BAD_REQUEST,
+      `Offered course with same section is already exists!`,
+    )
   }
 
   const result = await OfferedCourseModel.create({
