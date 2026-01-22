@@ -99,3 +99,10 @@ export const offeredCourseServices = {
   getSingleOfferedCourseFromDB,
   updateOfferedCourseInDB,
 }
+
+export const offeredCourseServices = {
+  createOfferedCourseIntoDB,
+  getAllOfferedCourseFromDB,
+  getSingleOfferedCourseFromDB,
+  updateOfferedCourseInDB,
+}
