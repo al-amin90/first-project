@@ -54,9 +54,22 @@ const updateOfferedCourse = catchAsync(async (req, res, next) => {
   })
 })
 
+const deleteOfferedCourse = catchAsync(async (req, res, next) => {
+  const result = await offeredCourseServices.deleteOfferedCourseFromDB(
+    req.params.id,
+  )
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Offered Course Delete Successfully',
+    data: result,
+  })
+})
+
 export const offeredCourseControllers = {
   createOfferedCourse,
   getAllOfferedCourse,
   getSingleOfferedCourse,
   updateOfferedCourse,
+  deleteOfferedCourse,
 }

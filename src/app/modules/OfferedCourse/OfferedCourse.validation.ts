@@ -25,13 +25,22 @@ const createOfferedCourseValidationSchema = z
     path: ['endTime'],
   })
 
-const updateOfferedCourseValidationSchema = z.object({
-  faculty: z.string().optional(),
-  maxCapacity: z.number().optional(),
-  days: z.array(z.enum([...Days] as [string, ...string[]])).optional(),
-  startTime: z.string().optional(),
-  endTime: z.string().optional(),
-})
+const updateOfferedCourseValidationSchema = z
+  .object({
+    faculty: z.string(),
+    maxCapacity: z.number(),
+    days: z.array(z.enum([...Days] as [string, ...string[]])),
+    startTime: z.string().regex(timeRegex, {
+      message: 'Start time must be in HH:MM format',
+    }),
+    endTime: z.string().regex(timeRegex, {
+      message: 'Start time must be in HH:MM format',
+    }),
+  })
+  .refine(data => data.startTime < data.endTime, {
+    message: 'Start time must be before end time',
+    path: ['endTime'],
+  })
 
 export const offeredCourseValidations = {
   createOfferedCourseValidationSchema,

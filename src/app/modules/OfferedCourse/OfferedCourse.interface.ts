@@ -17,7 +17,7 @@ export type TOfferedCourse = {
 }
 
 export type TSchedule = {
-  days: Days
+  days: Days[]
   startTime: string
   endTime: string
 }

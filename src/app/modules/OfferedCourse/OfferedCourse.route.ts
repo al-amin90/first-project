@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import validateRequest from '../../middlewares/validateRequest'
-import { offeredCourseValidations } from './OfferedCourse.validation'
 import { offeredCourseControllers } from './OfferedCourse.controller'
+import { offeredCourseValidations } from './OfferedCourse.validation'
 
 const router = Router()
 
@@ -20,4 +20,6 @@ router.patch(
   validateRequest(offeredCourseValidations.updateOfferedCourseValidationSchema),
   offeredCourseControllers.updateOfferedCourse,
 )
+router.delete('/:id', offeredCourseControllers.deleteOfferedCourse)
+
 export const offeredCourseRouter = router
