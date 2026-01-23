@@ -5,6 +5,8 @@ import SemesterRegistrationModel from './semesterRegistration.model'
 import AcademicSemesterModel from '../academicSemester/academicSemester.model'
 import QueryBuilder from '../../builder/QueryBuilder'
 import { RegistrationStatus } from './semesterRegistration.constant'
+import OfferedCourseModel from '../OfferedCourse/OfferedCourse.model'
+import mongoose from 'mongoose'
 
 const createSemesterRegistrationIntoDB = async (
   payload: TSemesterRegistration,
@@ -111,9 +113,40 @@ const updateSemesterRegistrationInDB = async (
   return result
 }
 
+const deleteSemesterRegistrationFromDB = async (id: string) => {
+  const session = await mongoose.startSession()
+
+  try {
+    session.startTransaction()
+    await OfferedCourseModel.deleteMany(
+      {
+        semesterRegistration: id,
+      },
+      { session },
+    )
+
+    const result = await SemesterRegistrationModel.findByIdAndDelete(id, {
+      session,
+    })
+    if (!result) {
+      throw new AppError(status.NOT_FOUND, 'Semester registration not found')
+    }
+
+    await session.commitTransaction()
+
+    return result
+  } catch (err) {
+    await session.abortTransaction()
+    throw err
+  } finally {
+    await session.endSession()
+  }
+}
+
 export const semesterRegistrationServices = {
   createSemesterRegistrationIntoDB,
   getAllSemesterRegistrationFromDB,
   getSingleSemesterRegistrationFromDB,
   updateSemesterRegistrationInDB,
+  deleteSemesterRegistrationFromDB,
 }
