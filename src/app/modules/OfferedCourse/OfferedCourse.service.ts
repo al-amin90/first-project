@@ -16,6 +16,9 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     course,
     section,
     faculty,
+    days,
+    startTime,
+    endTime,
   } = payload
 
   const isSemesterRegistrationExists =
@@ -74,6 +77,29 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     )
   }
 
+  const assignedSchedulesRegister = await OfferedCourseModel.find({
+    semesterRegistration,
+    faculty,
+    days: { $in: days },
+  }).select('days startTime endTime')
+
+  assignedSchedulesRegister?.forEach(schedule => {
+    const existingStartTime = new Date(`1970-01-01T${schedule.startTime}`)
+    const existingEndTime = new Date(`1970-01-01T${schedule.endTime}`)
+    const currentStartTime = new Date(`1970-01-01T${startTime}`)
+    const currentEndTime = new Date(`1970-01-01T${endTime}`)
+
+    if (
+      existingEndTime > currentStartTime &&
+      currentEndTime > existingStartTime
+    ) {
+      throw new AppError(
+        status.CONFLICT,
+        `The Faculty not available at that time! Choose other time or day`,
+      )
+    }
+  })
+
   const result = await OfferedCourseModel.create({
     ...payload,
     academicSemester,
@@ -92,13 +118,6 @@ const updateOfferedCourseInDB = async (
   id: string,
   payload: Partial<TOfferedCourse>,
 ) => {}
-
-export const offeredCourseServices = {
-  createOfferedCourseIntoDB,
-  getAllOfferedCourseFromDB,
-  getSingleOfferedCourseFromDB,
-  updateOfferedCourseInDB,
-}
 
 export const offeredCourseServices = {
   createOfferedCourseIntoDB,
