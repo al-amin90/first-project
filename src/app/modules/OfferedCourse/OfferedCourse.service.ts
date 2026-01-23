@@ -7,6 +7,7 @@ import { AcademicFaculty } from '../academicFaculty/academicFaculty.model'
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model'
 import { Course } from '../Course/course.model'
 import FacultyModal from '../faculty/faculty.model'
+import { hasTimeConflict } from './OfferedCourse.utils'
 
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   const {
@@ -77,28 +78,24 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     )
   }
 
-  const assignedSchedulesRegister = await OfferedCourseModel.find({
+  const assignedSchedules = await OfferedCourseModel.find({
     semesterRegistration,
     faculty,
     days: { $in: days },
   }).select('days startTime endTime')
 
-  assignedSchedulesRegister?.forEach(schedule => {
-    const existingStartTime = new Date(`1970-01-01T${schedule.startTime}`)
-    const existingEndTime = new Date(`1970-01-01T${schedule.endTime}`)
-    const currentStartTime = new Date(`1970-01-01T${startTime}`)
-    const currentEndTime = new Date(`1970-01-01T${endTime}`)
+  const newSchedule = {
+    days,
+    startTime,
+    endTime,
+  }
 
-    if (
-      existingEndTime > currentStartTime &&
-      currentEndTime > existingStartTime
-    ) {
-      throw new AppError(
-        status.CONFLICT,
-        `The Faculty not available at that time! Choose other time or day`,
-      )
-    }
-  })
+  if (hasTimeConflict(assignedSchedules, newSchedule)) {
+    throw new AppError(
+      status.CONFLICT,
+      `The Faculty not available at that time! Choose other time or day`,
+    )
+  }
 
   const result = await OfferedCourseModel.create({
     ...payload,
