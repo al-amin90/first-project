@@ -14,8 +14,6 @@ const auth = (...requiredRoles: TUserRole[]) => {
       throw new AppError(status.FORBIDDEN, 'You are not authorized!')
     }
 
-    //check if the token is valid
-
     jwt.verify(
       token,
       config.jwt_access_token as string,
