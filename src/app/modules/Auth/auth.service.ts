@@ -1,42 +1,45 @@
 import status from 'http-status'
 import AppError from '../../errors/AppError'
-import { TLoginUser, TSemesterRegistration } from './auth.interface'
-import SemesterRegistrationModel from './semesterRegistration.model'
-import AcademicSemesterModel from '../academicSemester/academicSemester.model'
-import QueryBuilder from '../../builder/QueryBuilder'
-import { RegistrationStatus } from './semesterRegistration.constant'
-import OfferedCourseModel from '../OfferedCourse/OfferedCourse.model'
-import mongoose from 'mongoose'
-import StudentModal from '../student/student.model'
+import { TLoginUser } from './auth.interface'
 import { UserModel } from '../user/user.model'
-
-import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import config from '../../config'
 
 const loginUser = async (payload: TLoginUser) => {
   console.log(payload)
 
-  const isUserExists = await UserModel.isUserExistByCustomId(payload.id)
+  const user = await UserModel.isUserExistByCustomId(payload.id)
 
-  if (!isUserExists) {
+  if (!user) {
     throw new AppError(status.NOT_FOUND, "The User Does't exists")
   }
 
-  const isDeleted = isUserExists.isDeleted
+  const isDeleted = user.isDeleted
   if (isDeleted) {
     throw new AppError(status.FORBIDDEN, 'The User is Deleted')
   }
 
-  if (isUserExists.status === 'blocked') {
+  if (user.status === 'blocked') {
     throw new AppError(status.FORBIDDEN, 'The User is Blocked')
   }
 
-  if (
-    !(await UserModel.isPasswordMatch(payload.password, isUserExists.password))
-  ) {
+  if (!(await UserModel.isPasswordMatch(payload.password, user.password))) {
     throw new AppError(status.FORBIDDEN, 'Password do not match')
   }
 
-  return []
+  const jwtPayload = {
+    id: user.id,
+    role: user.role,
+  }
+
+  const accessToken = jwt.sign(jwtPayload, config.jwt_access_token as string, {
+    expiresIn: '10d',
+  })
+
+  return {
+    token: accessToken,
+    needPasswordChange: user.needsPasswordChange,
+  }
 }
 
 export const userServices = {
