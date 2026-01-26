@@ -10,5 +10,9 @@ export interface IUser {
 }
 
 export interface IUserModel extends Model<IUser> {
-  isUserExist(id: string): Promise<string> | null
+  isUserExistByCustomId(id: string): Promise<IUser> | null
+  isPasswordMatch(
+    planTextPassword: string,
+    hashTextPassword: string,
+  ): Promise<IUser> | null
 }

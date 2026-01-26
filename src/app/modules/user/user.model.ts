@@ -35,8 +35,12 @@ const userSchema = new Schema<IUser, IUserModel>(
   },
   {
     statics: {
-      async isUserExist(id: string) {
+      async isUserExistByCustomId(id: string) {
         return this.findOne({ id })
+      },
+
+      async isPasswordMatch(planTextPassword, hashTextPassword) {
+        return await bcrypt.compare(planTextPassword, hashTextPassword)
       },
     },
     timestamps: true,

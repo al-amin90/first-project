@@ -15,14 +15,13 @@ import bcrypt from 'bcrypt'
 const loginUser = async (payload: TLoginUser) => {
   console.log(payload)
 
-  const isUserExists = await UserModel.findOne({ id: payload.id })
+  const isUserExists = await UserModel.isUserExistByCustomId(payload.id)
 
   if (!isUserExists) {
     throw new AppError(status.NOT_FOUND, "The User Does't exists")
   }
 
   const isDeleted = isUserExists.isDeleted
-
   if (isDeleted) {
     throw new AppError(status.FORBIDDEN, 'The User is Deleted')
   }
@@ -31,11 +30,11 @@ const loginUser = async (payload: TLoginUser) => {
     throw new AppError(status.FORBIDDEN, 'The User is Blocked')
   }
 
-  const checkPassword = await bcrypt.compare(
-    payload.password,
-    isUserExists.password,
-  )
-  console.log(checkPassword)
+  if (
+    !(await UserModel.isPasswordMatch(payload.password, isUserExists.password))
+  ) {
+    throw new AppError(status.FORBIDDEN, 'Password do not match')
+  }
 
   return []
 }
