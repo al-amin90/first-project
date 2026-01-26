@@ -3,10 +3,11 @@ import validateRequest from '../../middlewares/validateRequest'
 import { facultyControllers } from './faculty.controller'
 import { updateFacultyValidationSchema } from './faculty.validate'
 import auth from '../../middlewares/auth'
+import { USER_ROLE } from '../user/user.constant'
 
 const router = express.Router()
 
-router.get('/', auth(), facultyControllers.getAllFaculty)
+router.get('/', auth(USER_ROLE.admin), facultyControllers.getAllFaculty)
 router.get('/:id', facultyControllers.getSingleFaculty)
 router.patch(
   '/:id',

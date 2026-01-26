@@ -46,6 +46,13 @@ const userSchema = new Schema<IUser, IUserModel>(
       async isPasswordMatch(planTextPassword, hashTextPassword) {
         return await bcrypt.compare(planTextPassword, hashTextPassword)
       },
+      async isJWTIssuedBeforePassword(
+        passwordChangeTimeStamp,
+        jwtIssuedTimeStamp,
+      ) {
+        console.log(passwordChangeTimeStamp, jwtIssuedTimeStamp)
+        return null
+      },
     },
     timestamps: true,
   },

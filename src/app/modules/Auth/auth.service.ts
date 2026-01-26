@@ -1,6 +1,6 @@
 import status from 'http-status'
 import AppError from '../../errors/AppError'
-import { TLoginUser } from './auth.interface'
+import { TChangePassword, TLoginUser } from './auth.interface'
 import { UserModel } from '../user/user.model'
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import config from '../../config'
@@ -43,7 +43,10 @@ const loginUser = async (payload: TLoginUser) => {
   }
 }
 
-const changePassword = async (userData: JwtPayload, payload) => {
+const changePassword = async (
+  userData: JwtPayload,
+  payload: TChangePassword,
+) => {
   const user = await UserModel.isUserExistByCustomId(userData.id)
 
   if (!user) {
