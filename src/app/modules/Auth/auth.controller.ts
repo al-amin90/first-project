@@ -3,10 +3,10 @@
 import sendResponse from '../../utils/SendResponse'
 import status from 'http-status'
 import catchAsync from '../../utils/catchAsync'
-import { userServices } from './auth.service'
+import { authServices } from './auth.service'
 
 const loginUser = catchAsync(async (req, res, next) => {
-  const result = await userServices.loginUser(req.body)
+  const result = await authServices.loginUser(req.body)
 
   sendResponse(res, {
     statusCode: status.OK,
@@ -16,6 +16,20 @@ const loginUser = catchAsync(async (req, res, next) => {
   })
 })
 
+const changePassword = catchAsync(async (req, res, next) => {
+  // const result = await authServices.loginUser(req.body)
+
+  console.log(req.user, req.body)
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'User is logged in Successfully',
+    data: [],
+  })
+})
+
 export const authControllers = {
   loginUser,
+  changePassword,
 }

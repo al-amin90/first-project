@@ -9,6 +9,7 @@ const loginUser = async (payload: TLoginUser) => {
   console.log(payload)
 
   const user = await UserModel.isUserExistByCustomId(payload.id)
+  console.log(user)
 
   if (!user) {
     throw new AppError(status.NOT_FOUND, "The User Does't exists")
@@ -42,6 +43,14 @@ const loginUser = async (payload: TLoginUser) => {
   }
 }
 
-export const userServices = {
+const changePassword = async (user: { id: string; role: string }, payload) => {
+  const changeUser = await UserModel.findByIdAndUpdate({
+    id: user.id,
+    role: user.role,
+  })
+}
+
+export const authServices = {
   loginUser,
+  changePassword,
 }

@@ -13,6 +13,7 @@ const userSchema = new Schema<IUser, IUserModel>(
     password: {
       type: String,
       required: true,
+      select: 0,
     },
     needsPasswordChange: {
       type: Boolean,
@@ -36,7 +37,7 @@ const userSchema = new Schema<IUser, IUserModel>(
   {
     statics: {
       async isUserExistByCustomId(id: string) {
-        return this.findOne({ id })
+        return this.findOne({ id }).select('+password')
       },
 
       async isPasswordMatch(planTextPassword, hashTextPassword) {
