@@ -1,4 +1,5 @@
 import { Model } from 'mongoose'
+import { USER_ROLE } from './user.constant'
 
 export interface IUser {
   id: string
@@ -16,3 +17,5 @@ export interface IUserModel extends Model<IUser> {
     hashTextPassword: string,
   ): Promise<IUser> | null
 }
+
+export type TUserRole = keyof typeof USER_ROLE
