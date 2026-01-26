@@ -50,8 +50,8 @@ const userSchema = new Schema<IUser, IUserModel>(
         passwordChangeTimeStamp,
         jwtIssuedTimeStamp,
       ) {
-        console.log(passwordChangeTimeStamp, jwtIssuedTimeStamp)
-        return null
+        const changeTime = new Date(passwordChangeTimeStamp).getTime() / 1000
+        return changeTime > jwtIssuedTimeStamp
       },
     },
     timestamps: true,

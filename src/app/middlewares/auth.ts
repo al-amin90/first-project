@@ -33,8 +33,18 @@ const auth = (...requiredRoles: TUserRole[]) => {
       throw new AppError(status.FORBIDDEN, 'The User is Blocked')
     }
 
+    if (
+      user.passwordChangeAt &&
+      (await UserModel.isJWTIssuedBeforePassword(
+        user.passwordChangeAt,
+        iat as number,
+      ))
+    ) {
+      throw new AppError(status.UNAUTHORIZED, 'You are not authorized. by!')
+    }
+
     if (requiredRoles && !requiredRoles.includes(role)) {
-      throw new AppError(status.UNAUTHORIZED, 'You are not authorized hi!')
+      throw new AppError(status.UNAUTHORIZED, 'You are not authorized. hi!')
     }
 
     req.user = decoded as JwtPayload
