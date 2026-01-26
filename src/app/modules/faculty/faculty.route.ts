@@ -2,10 +2,11 @@ import express from 'express'
 import validateRequest from '../../middlewares/validateRequest'
 import { facultyControllers } from './faculty.controller'
 import { updateFacultyValidationSchema } from './faculty.validate'
+import auth from '../../middlewares/auth'
 
 const router = express.Router()
 
-router.get('/', facultyControllers.getAllFaculty)
+router.get('/', auth(), facultyControllers.getAllFaculty)
 router.get('/:id', facultyControllers.getSingleFaculty)
 router.patch(
   '/:id',

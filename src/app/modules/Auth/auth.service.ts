@@ -38,7 +38,7 @@ const loginUser = async (payload: TLoginUser) => {
 
   return {
     token: accessToken,
-    needPasswordChange: user.needsPasswordChange,
+    needsPasswordChange: user.needsPasswordChange,
   }
 }
 
