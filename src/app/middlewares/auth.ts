@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from 'express'
 import catchAsync from '../utils/catchAsync'
 import AppError from '../errors/AppError'
 import status from 'http-status'
+import config from '../config'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 
 const auth = () => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -11,7 +13,20 @@ const auth = () => {
       throw new AppError(status.FORBIDDEN, 'You are not authorized!')
     }
 
-    return next()
+    //check if the token is valid
+
+    jwt.verify(
+      token,
+      config.jwt_access_token as string,
+      function (err, decoded) {
+        if (err) {
+          throw new AppError(status.UNAUTHORIZED, 'You are not authorized!')
+        }
+
+        req.user = decoded as JwtPayload
+        next()
+      },
+    )
   })
 }
 
