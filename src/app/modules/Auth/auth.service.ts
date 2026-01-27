@@ -2,13 +2,12 @@ import status from 'http-status'
 import AppError from '../../errors/AppError'
 import { TChangePassword, TLoginUser } from './auth.interface'
 import { UserModel } from '../user/user.model'
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import { JwtPayload } from 'jsonwebtoken'
 import config from '../../config'
 import bcrypt from 'bcrypt'
+import { createToken } from './auth.utils'
 
 const loginUser = async (payload: TLoginUser) => {
-  console.log(payload)
-
   const user = await UserModel.isUserExistByCustomId(payload.id)
 
   if (!user) {
@@ -33,12 +32,21 @@ const loginUser = async (payload: TLoginUser) => {
     role: user.role,
   }
 
-  const accessToken = jwt.sign(jwtPayload, config.jwt_access_token as string, {
-    expiresIn: '10d',
-  })
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_token as string,
+    config.jwt_access_expires_in as string,
+  )
+
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_token as string,
+    config.jwt_refresh_expires_in as string,
+  )
 
   return {
-    token: accessToken,
+    accessToken,
+    refreshToken,
     needsPasswordChange: user.needsPasswordChange,
   }
 }
